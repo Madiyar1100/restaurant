@@ -1,0 +1,370 @@
+{
+  "meta": {
+    "createdAt": "2026-05-03T10:57:07.595Z",
+    "updatedAt": "2026-05-03T13:02:10.058Z",
+    "restaurantName": "Sakura Table"
+  },
+  "users": [
+    {
+      "id": "usr_0ab90a19d7298cb6",
+      "name": "Administrator",
+      "email": "admin@sakura.local",
+      "phone": "+7 700 000 00 00",
+      "role": "admin",
+      "passwordHash": "809360bc157a507a416bf9e3754489b7:c4d08d646a8a0fe7db65c1789f52c66e83fa35c486c696e3ebf04cdaf2d991cc",
+      "createdAt": "2026-05-03T10:57:08.079Z"
+    },
+    {
+      "id": "usr_aaa370848597b600",
+      "name": "Demo Guest",
+      "email": "guest@sakura.local",
+      "phone": "+7 701 111 22 33",
+      "role": "guest",
+      "passwordHash": "175902912ba359d8408e731e184b1159:9dd3774bfcdbb5efda2af5c1a652f57fbfe1fb27e96b11799babdd879afa437f",
+      "createdAt": "2026-05-03T10:57:39.849Z"
+    },
+    {
+      "id": "usr_dc22466a8b82674d",
+      "name": "Мадияр Кудайберген",
+      "email": "madi16.2004@gmail.com",
+      "phone": "+77074822656",
+      "role": "guest",
+      "passwordHash": "47778b351efacaf616ebf3c42732ee1a:8aaa7d238d61202aeb5017fda91a1502bcbee963d1df33eb4814ef015cf72e91",
+      "createdAt": "2026-05-03T11:34:10.436Z"
+    },
+    {
+      "id": "usr_8f4824607f6a218c",
+      "name": "Smoke Guest",
+      "email": "smoke-1777813165507@test.local",
+      "phone": "+70000000000",
+      "role": "guest",
+      "passwordHash": "c9a3e7fcb4cdf2662cea215867850cf7:38a2b979029d5a4bf0339d62d7c42acb33e5771e0123faeb6717a2c0e7df88e6",
+      "createdAt": "2026-05-03T12:59:26.194Z"
+    },
+    {
+      "id": "usr_0b52f62108af838e",
+      "name": "Profile Updated",
+      "email": "profile-1777813329016@test.local",
+      "phone": "+70000000001",
+      "role": "guest",
+      "passwordHash": "0e74dfa89cc188e26a4427fad8b041bd:ac5ee86f130dbb83665fd71e2da6b4179d553a9e1266935e1c3eadbdbcd85ba4",
+      "createdAt": "2026-05-03T13:02:09.742Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ses_93ea3b7e184df036",
+      "userId": "usr_aaa370848597b600",
+      "createdAt": "2026-05-03T12:07:15.186Z",
+      "expiresAt": "2026-05-10T12:07:15.186Z"
+    },
+    {
+      "id": "ses_59558f3348c7fbaf",
+      "userId": "usr_0ab90a19d7298cb6",
+      "createdAt": "2026-05-03T12:07:18.170Z",
+      "expiresAt": "2026-05-10T12:07:18.170Z"
+    },
+    {
+      "id": "ses_45c996050bf1e819",
+      "userId": "usr_aaa370848597b600",
+      "createdAt": "2026-05-03T12:10:00.141Z",
+      "expiresAt": "2026-05-10T12:10:00.141Z"
+    },
+    {
+      "id": "ses_d25aba6b87939587",
+      "userId": "usr_aaa370848597b600",
+      "createdAt": "2026-05-03T12:11:11.225Z",
+      "expiresAt": "2026-05-10T12:11:11.227Z"
+    },
+    {
+      "id": "ses_72e409a2d78da05a",
+      "userId": "usr_aaa370848597b600",
+      "createdAt": "2026-05-03T12:12:11.703Z",
+      "expiresAt": "2026-05-10T12:12:11.703Z"
+    },
+    {
+      "id": "ses_0a71366e80cbb03c",
+      "userId": "usr_0ab90a19d7298cb6",
+      "createdAt": "2026-05-03T12:22:59.796Z",
+      "expiresAt": "2026-05-10T12:22:59.796Z"
+    },
+    {
+      "id": "ses_cc74d21c4ca076ae",
+      "userId": "usr_8f4824607f6a218c",
+      "createdAt": "2026-05-03T12:59:26.196Z",
+      "expiresAt": "2026-05-10T12:59:26.196Z"
+    },
+    {
+      "id": "ses_f93658b2ff1fd050",
+      "userId": "usr_0b52f62108af838e",
+      "createdAt": "2026-05-03T13:02:09.742Z",
+      "expiresAt": "2026-05-10T13:02:09.742Z"
+    }
+  ],
+  "menu": [
+    {
+      "id": "menu_f57a42cc6513647d",
+      "name": "Omakase Set",
+      "category": "sets",
+      "price": 18900,
+      "description": "12 нигири, 8 роллов, мисо-бульон, гари, васаби и три фирменных соуса.",
+      "tags": [
+        "шеф",
+        "премиум"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_fa5e586dfbb569c3",
+      "name": "Akami Nigiri",
+      "category": "sushi",
+      "price": 2100,
+      "description": "Постный тунец на теплом рисе с легкой кистью никири-соуса.",
+      "tags": [
+        "тунец",
+        "классика"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_d11cdf0176795655",
+      "name": "Salmon Yuzu Roll",
+      "category": "rolls",
+      "price": 4200,
+      "description": "Лосось, огурец, авокадо, юдзу-косе, кунжут и тобико.",
+      "tags": [
+        "лосось",
+        "цитрус"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_a56c43ed8427e0ab",
+      "name": "Unagi Dragon Roll",
+      "category": "rolls",
+      "price": 5200,
+      "description": "Угорь на гриле, авокадо, огурец, глазурь таре и хрустящий рис.",
+      "tags": [
+        "угорь",
+        "теплый"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_24be3700e384cee2",
+      "name": "Sake Junmai",
+      "category": "drinks",
+      "price": 3900,
+      "description": "Сухое саке джунмай, подаем охлажденным или теплым, 180 мл.",
+      "tags": [
+        "саке",
+        "сухое"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_ef7ed380809f3bf6",
+      "name": "Edamame Shio",
+      "category": "sides",
+      "price": 1600,
+      "description": "Эдамаме на пару с морской солью и цитрусовой цедрой.",
+      "tags": [
+        "гарнир",
+        "вегетарианское"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_6ba9bc21af8539f3",
+      "name": "Sauce Flight",
+      "category": "sauces",
+      "price": 1200,
+      "description": "Понзу, спайси-майо, никири-соя и копченый кунжутный соус.",
+      "tags": [
+        "соусы",
+        "дегустация"
+      ],
+      "available": true
+    },
+    {
+      "id": "menu_d892ed94e76b385d",
+      "name": "Wasabi & Gari Set",
+      "category": "sides",
+      "price": 900,
+      "description": "Свежий васаби, маринованный имбирь и соевый соус к суши-сетам.",
+      "tags": [
+        "пейринг",
+        "классика"
+      ],
+      "available": true
+    }
+  ],
+  "reservations": [
+    {
+      "id": "res_e5c6935bd7386473",
+      "userId": "usr_8f4824607f6a218c",
+      "name": "Smoke Guest",
+      "phone": "+70000000000",
+      "date": "2026-06-01",
+      "time": "19:30",
+      "guests": 2,
+      "occasion": "Smoke",
+      "notes": "Window table",
+      "status": "new",
+      "createdAt": "2026-05-03T12:59:26.358Z"
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "ord_2af50303befe7e26",
+      "userId": "usr_aaa370848597b600",
+      "name": "Алия Сато",
+      "phone": "+7 701 111 22 33",
+      "address": "ул. Кабанбай батыра, 12",
+      "timeWindow": "asap",
+      "payment": "card",
+      "notes": "Без острого соуса, добавить васаби отдельно.",
+      "items": [
+        {
+          "menuItemId": "menu_f57a42cc6513647d",
+          "name": "Omakase Set",
+          "price": 18900,
+          "quantity": 1
+        }
+      ],
+      "total": 18900,
+      "status": "new",
+      "createdAt": "2026-05-03T10:57:41.548Z"
+    },
+    {
+      "id": "ord_4b093ff2b63abddc",
+      "userId": "usr_dc22466a8b82674d",
+      "name": "Мадияр Кудайберген",
+      "phone": "+77074822656",
+      "address": "madi16.2004@gmail.com",
+      "timeWindow": "18:00-19:00",
+      "payment": "cash",
+      "notes": "gege",
+      "items": [
+        {
+          "menuItemId": "menu_6ba9bc21af8539f3",
+          "name": "Sauce Flight",
+          "price": 1200,
+          "quantity": 1
+        },
+        {
+          "menuItemId": "menu_d892ed94e76b385d",
+          "name": "Wasabi & Gari Set",
+          "price": 900,
+          "quantity": 1
+        },
+        {
+          "menuItemId": "menu_ef7ed380809f3bf6",
+          "name": "Edamame Shio",
+          "price": 1600,
+          "quantity": 1
+        }
+      ],
+      "total": 3700,
+      "status": "new",
+      "createdAt": "2026-05-03T11:34:28.563Z"
+    },
+    {
+      "id": "ord_338f426cc8fd37b1",
+      "userId": "usr_aaa370848597b600",
+      "name": "Profile Test",
+      "phone": "+7 777 123 45 67",
+      "address": "Hosting street 2",
+      "timeWindow": "19:00-20:00",
+      "payment": "card",
+      "notes": "Extra soy",
+      "items": [
+        {
+          "menuItemId": "menu_f57a42cc6513647d",
+          "name": "Omakase Set",
+          "price": 18900,
+          "quantity": 2
+        }
+      ],
+      "total": 37800,
+      "status": "new",
+      "createdAt": "2026-05-03T12:07:17.959Z"
+    },
+    {
+      "id": "ord_82456ee8da8be92d",
+      "userId": "usr_aaa370848597b600",
+      "name": "Demo Guest",
+      "phone": "+7 701 111 22 33",
+      "address": "Final street 10",
+      "timeWindow": "asap",
+      "payment": "card",
+      "notes": "Extra ginger",
+      "items": [
+        {
+          "menuItemId": "menu_f57a42cc6513647d",
+          "name": "Omakase Set",
+          "price": 18900,
+          "quantity": 1
+        }
+      ],
+      "total": 18900,
+      "status": "new",
+      "createdAt": "2026-05-03T12:12:12.324Z"
+    },
+    {
+      "id": "ord_80cb459c596236a9",
+      "userId": "usr_dc22466a8b82674d",
+      "name": "Мадияр Кудайберген",
+      "phone": "+77074822656",
+      "address": "rgwwrrwe",
+      "timeWindow": "18:00-19:00",
+      "payment": "card",
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": "menu_d11cdf0176795655",
+          "name": "Salmon Yuzu Roll",
+          "price": 4200,
+          "quantity": 1
+        },
+        {
+          "menuItemId": "menu_a56c43ed8427e0ab",
+          "name": "Unagi Dragon Roll",
+          "price": 5200,
+          "quantity": 1
+        }
+      ],
+      "total": 9400,
+      "status": "new",
+      "createdAt": "2026-05-03T12:22:41.378Z"
+    },
+    {
+      "id": "ord_93be694d9f1b930e",
+      "userId": "usr_8f4824607f6a218c",
+      "name": "Smoke Guest",
+      "phone": "+70000000000",
+      "address": "Smoke street 1",
+      "timeWindow": "asap",
+      "payment": "card",
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": "menu_f57a42cc6513647d",
+          "name": "Omakase Set",
+          "price": 18900,
+          "quantity": 2
+        }
+      ],
+      "total": 37800,
+      "status": "new",
+      "createdAt": "2026-05-03T12:59:26.382Z"
+    }
+  ],
+  "adminSessions": [
+    {
+      "id": "adm_c77547a25f263185",
+      "createdAt": "2026-05-03T12:59:38.092Z",
+      "expiresAt": "2026-05-04T00:59:38.092Z"
+    }
+  ]
+}

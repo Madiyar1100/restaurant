@@ -1,0 +1,16 @@
+{
+  "name": "sakura-table",
+  "version": "1.0.0",
+  "description": "Django sushi restaurant website with reservations, delivery, auth, admin CRUD, and operator chat.",
+  "main": "manage.py",
+  "scripts": {
+    "start": "python manage.py runserver 0.0.0.0:8000"
+  },
+  "keywords": [
+    "restaurant",
+    "sushi",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT"
+}

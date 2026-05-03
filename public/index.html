@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sakura Table - суши, роллы, саке и доставка</title>
+    <meta name="description" content="Sakura Table: ресторан суши с бронированием столиков, доставкой, аккаунтом гостя и AI-консьержем.">
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">К основному содержимому</a>
+
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="Sakura Table">
+        <span class="brand-mark" aria-hidden="true">ST</span>
+        <span>
+          <strong>Sakura Table</strong>
+          <small>Суши. Роллы. Саке.</small>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Основная навигация">
+        <a href="#menu">Меню</a>
+        <a href="#booking">Бронь</a>
+        <a href="#delivery">Доставка</a>
+        <a href="#chat">AI-консьерж</a>
+        <a href="/admin/">Админ</a>
+      </nav>
+
+      <div class="account-actions">
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Переключить тему">
+          <span data-theme-icon aria-hidden="true">☾</span>
+        </button>
+        <span class="user-chip" data-user-chip hidden></span>
+        <button class="icon-btn cart-button" type="button" data-open-cart aria-label="Открыть корзину">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+            <path d="M6.4 7.5h11.2l-1 10.2a2 2 0 0 1-2 1.8H9.4a2 2 0 0 1-2-1.8L6.4 7.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M9 9V6a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span class="cart-count" data-cart-count>0</span>
+        </button>
+        <button class="ghost-btn" type="button" data-open-profile hidden>Профиль</button>
+        <button class="ghost-btn" type="button" data-open-auth>Войти</button>
+        <button class="ghost-btn danger" type="button" data-logout hidden>Выйти</button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section id="home" class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Сезонное японское меню</p>
+          <h1>Суши-бар с горячей кухней, саке и доставкой в один клик.</h1>
+          <p class="hero-text">Роллы, нигири, сеты, васаби, гари, соусы и теплые гарниры. Забронируйте столик или соберите доставку после входа в аккаунт.</p>
+          <div class="hero-actions">
+            <a class="primary-btn" href="#booking">Забронировать стол</a>
+            <a class="secondary-btn" href="#menu">Выбрать из меню</a>
+          </div>
+        </div>
+        <figure class="hero-photo">
+          <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1400&q=80" alt="Ассорти суши и роллов на темной сервировке">
+        </figure>
+      </section>
+
+      <section class="photo-band" aria-label="Атмосфера ресторана">
+        <article>
+          <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=900&q=80" alt="Свежие роллы с лососем и соусом">
+          <h2>Роллы готовятся под заказ</h2>
+          <p>Рис держим теплым, рыбу нарезаем перед подачей, соусы подбираем под конкретный сет.</p>
+        </article>
+        <article>
+          <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=900&q=80" alt="Суши на деревянной доске с палочками">
+          <h2>Вечерний sushi counter</h2>
+          <p>Можно прийти на ужин, дегустацию саке или быстро забрать заказ с собой.</p>
+        </article>
+      </section>
+
+      <section id="menu" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Меню</p>
+          <h2>Суши, роллы, саке, гарниры и соусы</h2>
+          <p>Добавляйте позиции в корзину. Количество и состав заказа редактируются в корзине в шапке.</p>
+        </div>
+        <div class="filters" role="list" aria-label="Фильтр меню">
+          <button class="filter-btn active" type="button" data-filter="all">Все</button>
+          <button class="filter-btn" type="button" data-filter="sets">Сеты</button>
+          <button class="filter-btn" type="button" data-filter="sushi">Суши</button>
+          <button class="filter-btn" type="button" data-filter="rolls">Роллы</button>
+          <button class="filter-btn" type="button" data-filter="drinks">Саке</button>
+          <button class="filter-btn" type="button" data-filter="sides">Гарниры</button>
+          <button class="filter-btn" type="button" data-filter="sauces">Соусы</button>
+        </div>
+        <div class="menu-grid" data-menu-grid></div>
+      </section>
+
+      <section id="booking" class="section split-section">
+        <div class="section-heading">
+          <p class="eyebrow">Бронирование</p>
+          <h2>Столик для ужина, дегустации или встречи</h2>
+          <p>Бронь сохраняется в базе и появляется в отдельной админ-панели. Для отправки заявки нужен аккаунт гостя.</p>
+        </div>
+        <form class="panel form-grid" data-reservation-form>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel" required>
+          </label>
+          <label>Дата
+            <input name="date" type="date" required>
+          </label>
+          <label>Время
+            <input name="time" type="time" required>
+          </label>
+          <label>Гостей
+            <input name="guests" type="number" min="1" max="16" value="2" required>
+          </label>
+          <label>Повод
+            <input name="occasion" placeholder="Ужин, дегустация, день рождения">
+          </label>
+          <label class="wide">Пожелания
+            <textarea name="notes" rows="4" placeholder="Например: стол у окна, без острых соусов, детский стул"></textarea>
+          </label>
+          <button class="primary-btn wide" type="submit">Отправить бронь</button>
+          <p class="form-message wide" data-reservation-message role="status"></p>
+        </form>
+      </section>
+
+      <section id="delivery" class="section delivery-layout">
+        <div class="section-heading">
+          <p class="eyebrow">Доставка</p>
+          <h2>Заказ суши домой или в офис</h2>
+          <p>Выберите блюда из меню, затем откройте корзину в шапке. Там можно изменить количество и отправить заказ.</p>
+        </div>
+        <div class="delivery-card">
+          <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80" alt="Сет роллов в коробке для доставки">
+          <div>
+            <h3>Доставка без отдельной страницы</h3>
+            <ol>
+              <li>Войдите или зарегистрируйтесь.</li>
+              <li>Добавьте суши, роллы, саке и соусы в корзину.</li>
+              <li>Откройте корзину и отправьте доставку.</li>
+            </ol>
+            <button class="primary-btn" type="button" data-open-cart>Открыть корзину</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="chat" class="section chat-section">
+        <div class="section-heading">
+          <p class="eyebrow">AI-консьерж</p>
+          <h2>Спросите про меню, соусы, саке или бронь</h2>
+          <p>Чат работает через сервер. Для голосового ввода нажмите микрофон в чате и разрешите доступ к микрофону в браузере.</p>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="auth-dialog" data-auth-dialog>
+      <form method="dialog" class="dialog-shell">
+        <button class="close-btn" value="close" aria-label="Закрыть окно входа">×</button>
+      </form>
+      <div class="dialog-body">
+        <div class="auth-tabs">
+          <button class="auth-tab active" type="button" data-auth-mode="login">Вход</button>
+          <button class="auth-tab" type="button" data-auth-mode="register">Регистрация</button>
+        </div>
+        <form data-login-form class="form-grid">
+          <label class="wide">Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label class="wide password-label">Пароль
+            <span class="password-field">
+              <input name="password" type="password" autocomplete="current-password" required>
+              <button class="icon-inline" type="button" data-toggle-password aria-label="Показать пароль">◎</button>
+            </span>
+          </label>
+          <button class="primary-btn wide" type="submit">Войти</button>
+        </form>
+        <form data-register-form class="form-grid" hidden>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel" required>
+          </label>
+          <label class="wide">Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label class="wide password-label">Пароль
+            <span class="password-field">
+              <input name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[^A-Za-z0-9]).{8,}" required aria-describedby="password-rules">
+              <button class="icon-inline" type="button" data-toggle-password aria-label="Показать пароль">◎</button>
+            </span>
+          </label>
+          <div class="password-tools wide">
+            <p id="password-rules">Минимум 8 символов и хотя бы один спецсимвол.</p>
+            <button class="mini-btn" type="button" data-generate-password>Сгенерировать пароль</button>
+          </div>
+          <button class="primary-btn wide" type="submit">Создать аккаунт</button>
+        </form>
+        <p class="form-message" data-auth-message role="status"></p>
+      </div>
+    </dialog>
+
+    <dialog class="profile-dialog" data-profile-dialog>
+      <form method="dialog" class="dialog-shell">
+        <button class="close-btn" value="close" aria-label="Закрыть профиль">×</button>
+      </form>
+      <div class="dialog-body">
+        <h2>Профиль</h2>
+        <form class="form-grid" data-profile-form>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel">
+          </label>
+          <label class="wide">Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label class="wide password-label">Новый пароль
+            <span class="password-field">
+              <input name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[^A-Za-z0-9]).{8,}" placeholder="Оставьте пустым, если не меняете">
+              <button class="icon-inline" type="button" data-toggle-password aria-label="Показать пароль">◎</button>
+            </span>
+          </label>
+          <button class="primary-btn wide" type="submit">Сохранить профиль</button>
+          <p class="form-message wide" data-profile-message role="status"></p>
+        </form>
+      </div>
+    </dialog>
+
+    <dialog class="cart-dialog" data-cart-dialog>
+      <form method="dialog" class="dialog-shell">
+        <button class="close-btn" value="close" aria-label="Закрыть корзину">×</button>
+      </form>
+      <div class="dialog-body">
+        <h2>Корзина доставки</h2>
+        <div data-cart-items class="cart-items"></div>
+        <p class="cart-total">Итого: <strong data-cart-total>0 ₸</strong></p>
+        <form class="form-grid" data-delivery-form>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel" required>
+          </label>
+          <label class="wide">Адрес
+            <input name="address" autocomplete="street-address" required>
+          </label>
+          <label>Время
+            <select name="timeWindow">
+              <option value="asap">Как можно скорее</option>
+              <option value="18:00-19:00">18:00-19:00</option>
+              <option value="19:00-20:00">19:00-20:00</option>
+              <option value="20:00-21:00">20:00-21:00</option>
+            </select>
+          </label>
+          <label>Оплата
+            <select name="payment">
+              <option value="card">Картой курьеру</option>
+              <option value="cash">Наличными</option>
+              <option value="online">Онлайн</option>
+            </select>
+          </label>
+          <label class="wide">Комментарий
+            <textarea name="notes" rows="3"></textarea>
+          </label>
+          <button class="primary-btn wide" type="submit">Вызвать доставку</button>
+          <p class="form-message wide" data-delivery-message role="status"></p>
+        </form>
+      </div>
+    </dialog>
+
+    <section class="chat-widget" data-chat-widget aria-label="AI чат ресторана">
+      <button class="chat-toggle" type="button" data-chat-toggle aria-expanded="false">AI</button>
+      <div class="chat-panel" data-chat-panel hidden>
+        <div class="chat-head">
+          <strong>AI-консьерж</strong>
+          <button class="close-inline" type="button" data-chat-close aria-label="Закрыть чат">×</button>
+        </div>
+        <div class="chat-log" data-chat-log>
+          <p class="assistant-msg">Здравствуйте. Подскажу по меню, саке, соусам, брони и доставке.</p>
+        </div>
+        <form class="chat-form" data-chat-form>
+          <label class="sr-only" for="chat-message">Сообщение</label>
+          <input id="chat-message" name="message" placeholder="Спросите про сет, доставку или бронь" autocomplete="off" required>
+          <button class="icon-inline mic-btn" type="button" data-voice-input aria-label="Голосовой ввод">◉</button>
+          <button class="secondary-btn operator-btn" type="button" data-call-operator>Оператор</button>
+          <button class="primary-btn" type="submit">Отправить</button>
+        </form>
+        <p class="chat-note" data-chat-note>AI работает через сервер, ключ не попадает в браузер.</p>
+      </div>
+    </section>
+
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ-панель Sakura Table</title>
+    <meta name="description" content="Отдельная админ-панель Sakura Table для управления меню, бронями, доставками и пользователями.">
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body class="admin-page">
+    <main class="admin-shell">
+      <header class="admin-topbar">
+        <a class="brand" href="/" aria-label="Вернуться на сайт Sakura Table">
+          <span class="brand-mark" aria-hidden="true">ST</span>
+          <span>
+            <strong>Sakura Table Admin</strong>
+            <small>Меню, брони, доставки, гости</small>
+          </span>
+        </a>
+        <div class="account-actions">
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="Переключить тему">
+            <span data-theme-icon aria-hidden="true">☾</span>
+          </button>
+          <a class="ghost-btn" href="/">На сайт</a>
+          <button class="ghost-btn danger" type="button" data-admin-logout hidden>Выйти</button>
+        </div>
+      </header>
+
+      <section class="admin-login-card" data-admin-login-card>
+        <p class="eyebrow">Отдельный вход</p>
+        <h1>Панель администратора</h1>
+        <p class="admin-muted">Это не обычный аккаунт гостя. Логин и пароль администратора задаются через переменные окружения на сервере.</p>
+        <form class="form-grid" data-admin-login-form>
+          <label class="wide">Логин
+            <input name="username" autocomplete="username" required>
+          </label>
+          <label class="wide password-label">Пароль
+            <span class="password-field">
+              <input name="password" type="password" autocomplete="current-password" required>
+              <button class="icon-inline" type="button" data-toggle-password aria-label="Показать пароль">◎</button>
+            </span>
+          </label>
+          <button class="primary-btn wide" type="submit">Войти в админку</button>
+          <p class="form-message wide" data-admin-login-message role="status"></p>
+        </form>
+      </section>
+
+      <section data-admin-app hidden>
+        <div class="section-heading">
+          <p class="eyebrow">База данных</p>
+          <h2>Управление рестораном</h2>
+          <p>Изменения сохраняются в JSON-базе на сервере. На хостинге подключите постоянный диск или перенесите слой данных на managed database.</p>
+        </div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Разделы админки">
+          <button class="admin-tab active" type="button" data-admin-tab="reservations">Брони</button>
+          <button class="admin-tab" type="button" data-admin-tab="deliveries">Доставки</button>
+          <button class="admin-tab" type="button" data-admin-tab="menu">Меню</button>
+          <button class="admin-tab" type="button" data-admin-tab="users">Пользователи</button>
+        </div>
+
+        <div class="admin-panel" data-admin-content></div>
+      </section>
+    </main>
+
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+    <script src="/static/admin.js" defer></script>
+  </body>
+</html>

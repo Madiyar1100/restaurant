@@ -97,42 +97,47 @@ ADMIN_PASSWORD=change-this-admin-password
 
 Это работает на хостинге, если web-сервис и Django Admin используют одну и ту же базу через `DATABASE_URL`.
 
-## Render
+## Render через New Web Service
 
-Вариант 1: Blueprint.
-
-1. Загрузите проект в GitHub/GitLab.
-2. В Render Dashboard откройте Blueprints.
-3. Выберите репозиторий с `render.yaml`.
-4. В env задайте:
-   - `GROQ_API_KEY`
-   - `ADMIN_USERNAME`
-   - `ADMIN_EMAIL`
-   - `ADMIN_PASSWORD`
-5. Render создаст web service и PostgreSQL.
-
-Вариант 2: ручная настройка.
+Вы уже выбрали `New +` -> `Web Service` и подключили Git-репозиторий. Для такого способа заполните поля так:
 
 ```text
+Name: restaurant
+Runtime: Python 3
+Branch: main
 Build Command: bash build.sh
 Start Command: gunicorn restaurant_project.wsgi:application
 ```
 
-Обязательные env:
+`Build Command` обязателен. Без него Render может запустить Django, но CSS/JS, миграции, меню и админ-пользователь не будут нормально подготовлены.
+
+В разделе `Environment` добавьте:
+
+```text
+DEBUG=0
+SECRET_KEY=любой-длинный-секретный-ключ
+ALLOWED_HOSTS=restaurant-8c92.onrender.com,.onrender.com
+CSRF_TRUSTED_ORIGINS=https://restaurant-8c92.onrender.com
+GROQ_API_KEY=ваш-groq-ключ
+GROQ_MODEL=llama-3.1-8b-instant
+ADMIN_USERNAME=manager
+ADMIN_EMAIL=manager@example.com
+ADMIN_PASSWORD=замените-на-свой-пароль
+```
+
+Для базы на бесплатном ручном web service можно временно не указывать `DATABASE_URL`, тогда будет SQLite внутри сервиса. Для production лучше подключить PostgreSQL или внешний managed database и добавить:
 
 ```text
 DATABASE_URL
-SECRET_KEY
-DEBUG=0
-ALLOWED_HOSTS=ваш-домен.onrender.com,ваш-домен
-CSRF_TRUSTED_ORIGINS=https://ваш-домен.onrender.com,https://ваш-домен
-GROQ_API_KEY
-ADMIN_USERNAME
-ADMIN_EMAIL
-ADMIN_PASSWORD
 ```
 
-Build script выполняет:
+После изменения этих полей нажмите:
+
+```text
+Manual Deploy -> Clear build cache & deploy
+```
+
+Build script выполнит:
 
 ```text
 collectstatic
@@ -140,6 +145,21 @@ migrate
 seed_sakura
 ensure_admin
 ```
+
+Проверка после деплоя:
+
+```text
+https://restaurant-8c92.onrender.com/static/styles.css
+https://restaurant-8c92.onrender.com/static/app.js
+https://restaurant-8c92.onrender.com/api/health
+https://restaurant-8c92.onrender.com/admin/
+```
+
+Если CSS/JS снова не применились, почти всегда причина в том, что не задан `Build Command` или не сделан `Clear build cache & deploy`.
+
+### Render Blueprint
+
+`render.yaml` тоже оставлен в проекте, но Blueprint может попросить карту из-за создания PostgreSQL. Если карту указывать не хотите, используйте ручной Web Service по инструкции выше.
 
 ## Beget
 

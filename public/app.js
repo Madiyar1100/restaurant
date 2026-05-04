@@ -8,7 +8,8 @@ const state = {
   operatorPoll: null,
   operatorLastCount: 0,
   recognition: null,
-  listening: false
+  listening: false,
+  page: "home"
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -62,7 +63,49 @@ function escapeHtml(value) {
 }
 
 function formData(form) {
-  return Object.fromEntries(new FormData(form).entries());
+  const data = {};
+  for (const [key, value] of new FormData(form).entries()) {
+    if (value instanceof File) continue;
+    data[key] = value;
+  }
+  return data;
+}
+
+function pageFromPath() {
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  return pageFromHref(path);
+}
+
+function pageFromHref(href) {
+  const path = (href || "/").replace(/\/+$/, "") || "/";
+  return {
+    "/": "home",
+    "/catalog": "catalog",
+    "/delivery": "delivery",
+    "/booking": "booking",
+    "/cart": "cart",
+    "/profile": "profile",
+    "/about": "about"
+  }[path] || "home";
+}
+
+function applyPage() {
+  state.page = pageFromPath();
+  document.body.dataset.page = state.page;
+  const titles = {
+    home: "Sakura Table - суши, роллы, саке и доставка",
+    catalog: "Каталог - Sakura Table",
+    delivery: "Доставка - Sakura Table",
+    booking: "Бронь столика - Sakura Table",
+    cart: "Корзина - Sakura Table",
+    profile: "Личный кабинет - Sakura Table",
+    about: "О нас - Sakura Table"
+  };
+  document.title = titles[state.page] || titles.home;
+  $$(".site-nav a, .footer-links a").forEach((link) => {
+    const linkPage = pageFromHref(link.getAttribute("href"));
+    link.classList.toggle("active", linkPage === state.page);
+  });
 }
 
 function toast(message) {
@@ -149,7 +192,7 @@ function renderUser() {
 
   if (state.user) {
     chip.hidden = false;
-    chip.textContent = state.user.name;
+    chip.innerHTML = `${state.user.avatarUrl ? `<img src="${escapeHtml(state.user.avatarUrl)}" alt="">` : ""}<span>${escapeHtml(state.user.name)}</span>`;
     openAuthButton.hidden = true;
     logoutButton.hidden = false;
     profileButton.hidden = false;
@@ -168,10 +211,25 @@ function prefillPersonalForms() {
     const name = $("input[name='name']", form);
     const phone = $("input[name='phone']", form);
     const email = $("input[name='email']", form);
+    const avatar = $("input[name='avatarUrl']", form);
     if (name && !name.value) name.value = state.user.name || "";
     if (phone && !phone.value) phone.value = state.user.phone || "";
     if (email && !email.value) email.value = state.user.email || "";
+    if (avatar && !avatar.value) avatar.value = state.user.avatarUrl || "";
+    if (form.matches("[data-profile-form]")) updateAvatarPreview(form);
   });
+}
+
+function updateAvatarPreview(form = document) {
+  const img = $("[data-avatar-preview]", form) || $("[data-avatar-preview]");
+  const initials = $("[data-avatar-initials]", form) || $("[data-avatar-initials]");
+  if (!img || !initials) return;
+  const input = $("input[name='avatarUrl']", form);
+  const value = input?.value || state.user?.avatarUrl || "";
+  img.hidden = !value;
+  initials.hidden = Boolean(value);
+  if (value) img.src = value;
+  initials.textContent = (state.user?.name || "ST").split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "ST";
 }
 
 function categoryLabel(category) {
@@ -224,6 +282,26 @@ function cartRows() {
   return [...state.cart.values()];
 }
 
+function saveCart() {
+  const payload = cartRows().map((row) => ({ id: row.item.id, quantity: row.quantity }));
+  localStorage.setItem("sakura-cart", JSON.stringify(payload));
+}
+
+function hydrateCart() {
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem("sakura-cart") || "[]");
+  } catch {
+    saved = [];
+  }
+  state.cart.clear();
+  if (!Array.isArray(saved)) return;
+  saved.forEach((row) => {
+    const item = state.menu.find((entry) => entry.id === String(row.id));
+    if (item && item.available) state.cart.set(item.id, { item, quantity: Math.max(1, Number(row.quantity || 1)) });
+  });
+}
+
 function renderCart() {
   const rows = cartRows();
   $$("[data-cart-items]").forEach((holder) => {
@@ -248,14 +326,16 @@ function renderCart() {
   $("[data-cart-count]").textContent = String(count);
 }
 
-function updatePaymentDetails() {
-  const form = $("[data-delivery-form]");
-  const details = $("[data-payment-details]", form);
-  const payment = $("select[name='payment']", form)?.value;
-  if (!details) return;
-  details.hidden = payment !== "online";
-  $$("input, select", details).forEach((input) => {
-    input.disabled = payment !== "online";
+function updatePaymentDetails(targetForm = null) {
+  const forms = targetForm ? [targetForm] : $$("[data-delivery-form]");
+  forms.forEach((form) => {
+    const details = $("[data-payment-details]", form);
+    const payment = $("select[name='payment']", form)?.value;
+    if (!details) return;
+    details.hidden = payment !== "online";
+    $$("input, select", details).forEach((input) => {
+      input.disabled = payment !== "online";
+    });
   });
 }
 
@@ -265,6 +345,7 @@ function addToCart(id) {
   if (!item || !item.available) return;
   const current = state.cart.get(id);
   state.cart.set(id, { item, quantity: current ? current.quantity + 1 : 1 });
+  saveCart();
   renderCart();
   toast("Позиция добавлена в корзину.");
 }
@@ -287,22 +368,30 @@ function setAuthMode(mode) {
 
 function openProfile() {
   if (!ensureLogin("Для редактирования профиля нужен аккаунт.")) return;
+  if (state.page !== "profile") {
+    window.location.href = "/profile/";
+    return;
+  }
   const form = $("[data-profile-form]");
   form.reset();
   $("input[name='name']", form).value = state.user.name || "";
   $("input[name='phone']", form).value = state.user.phone || "";
   $("input[name='email']", form).value = state.user.email || "";
+  $("input[name='avatarUrl']", form).value = state.user.avatarUrl || "";
+  updateAvatarPreview(form);
   setMessage("[data-profile-message]", "");
-  openDialog("[data-profile-dialog]");
 }
 
 function openCart() {
   if (!ensureLogin("Для доставки нужен аккаунт.")) return;
+  if (state.page !== "cart") {
+    window.location.href = "/cart/";
+    return;
+  }
   prefillPersonalForms();
   setMessage("[data-delivery-message]", "");
   renderCart();
   updatePaymentDetails();
-  openDialog("[data-cart-dialog]");
 }
 
 async function initData() {
@@ -310,9 +399,11 @@ async function initData() {
   const [me, menu] = await Promise.all([api("/api/me"), api("/api/menu")]);
   state.user = me.user;
   state.menu = menu.menu;
+  hydrateCart();
   renderUser();
   renderMenu();
   renderCart();
+  if ((state.page === "profile" || state.page === "cart") && !state.user) openAuth("login");
 }
 
 function attachEvents() {
@@ -358,6 +449,7 @@ function attachEvents() {
     const removeButton = event.target.closest("[data-cart-remove]");
     if (removeButton) {
       state.cart.delete(removeButton.dataset.cartRemove);
+      saveCart();
       renderCart();
     }
   });
@@ -397,7 +489,7 @@ function attachEvents() {
     }
   });
 
-  $("[data-profile-form]").addEventListener("submit", async (event) => {
+  $$("[data-profile-form]").forEach((profileForm) => profileForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const password = $("input[name='password']", form).value;
@@ -415,12 +507,13 @@ function attachEvents() {
     } catch (error) {
       setMessage("[data-profile-message]", error.message, true);
     }
-  });
+  }));
 
   $("[data-logout]").addEventListener("click", async () => {
     await api("/api/logout", { method: "POST" });
     state.user = null;
     state.cart.clear();
+    saveCart();
     renderUser();
     renderCart();
     toast("Вы вышли.");
@@ -437,17 +530,34 @@ function attachEvents() {
   document.addEventListener("input", (event) => {
     const qtyInput = event.target.closest("[data-cart-qty]");
     if (!qtyInput) {
-      if (event.target.closest("[data-delivery-form] select[name='payment']")) updatePaymentDetails();
+      const paymentSelect = event.target.closest("[data-delivery-form] select[name='payment']");
+      if (paymentSelect) updatePaymentDetails(paymentSelect.closest("[data-delivery-form]"));
+      if (event.target.matches("input[name='avatarUrl']")) updateAvatarPreview(event.target.closest("[data-profile-form]"));
       return;
     }
     const row = state.cart.get(qtyInput.dataset.cartQty);
     if (!row) return;
     row.quantity = Math.max(1, Number(qtyInput.value || 1));
     state.cart.set(row.item.id, row);
+    saveCart();
     renderCart();
   });
 
-  $("[data-delivery-form] select[name='payment']").addEventListener("change", updatePaymentDetails);
+  document.addEventListener("change", (event) => {
+    const paymentSelect = event.target.closest("[data-delivery-form] select[name='payment']");
+    if (paymentSelect) updatePaymentDetails(paymentSelect.closest("[data-delivery-form]"));
+
+    const avatarFile = event.target.closest("[data-avatar-file]");
+    if (!avatarFile || !avatarFile.files?.[0]) return;
+    const form = avatarFile.closest("[data-profile-form]");
+    const avatarInput = $("input[name='avatarUrl']", form);
+    const reader = new FileReader();
+    reader.onload = () => {
+      avatarInput.value = reader.result;
+      updateAvatarPreview(form);
+    };
+    reader.readAsDataURL(avatarFile.files[0]);
+  });
 
   $("[data-reservation-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -463,7 +573,7 @@ function attachEvents() {
     }
   });
 
-  $("[data-delivery-form]").addEventListener("submit", async (event) => {
+  $$("[data-delivery-form]").forEach((deliveryForm) => deliveryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     if (!ensureLogin("Для доставки нужен аккаунт.")) return;
@@ -483,6 +593,7 @@ function attachEvents() {
       await api("/api/deliveries", { method: "POST", body: JSON.stringify(data) });
       form.reset();
       state.cart.clear();
+      saveCart();
       renderCart();
       prefillPersonalForms();
       setMessage("[data-delivery-message]", "Заказ принят. Статус можно менять в админ-панели.");
@@ -490,7 +601,7 @@ function attachEvents() {
     } catch (error) {
       setMessage("[data-delivery-message]", error.message, true);
     }
-  });
+  }));
 
   attachChatEvents();
 }
@@ -627,5 +738,6 @@ function pushChat(role, content) {
   return node;
 }
 
+applyPage();
 attachEvents();
 initData().catch((error) => toast(error.message));

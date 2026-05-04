@@ -78,6 +78,7 @@ def user_payload(user):
         "name": full_name,
         "email": user.email,
         "phone": profile.phone,
+        "avatarUrl": profile.avatar_url,
         "role": "admin" if user.is_staff else "guest",
         "createdAt": user.date_joined.isoformat(),
     }
@@ -257,6 +258,7 @@ def me(request):
 
     profile = profile_for(user)
     profile.phone = text(data.get("phone"), profile.phone)
+    profile.avatar_url = text(data.get("avatarUrl"), profile.avatar_url)
     profile.save()
 
     if password:
@@ -285,7 +287,7 @@ def register(request):
 
     first_name, _, last_name = name.partition(" ")
     user = User.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
-    CustomerProfile.objects.create(user=user, phone=text(data.get("phone")))
+    CustomerProfile.objects.create(user=user, phone=text(data.get("phone")), avatar_url=text(data.get("avatarUrl")))
     login(request, user)
     return JsonResponse({"user": user_payload(user)}, status=201)
 

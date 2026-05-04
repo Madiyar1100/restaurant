@@ -7,11 +7,11 @@
     <meta name="description" content="Sakura Table: ресторан суши с бронированием столиков, доставкой, аккаунтом гостя и AI-консьержем.">
     <link rel="stylesheet" href="/static/styles.css">
   </head>
-  <body>
+  <body data-page="home">
     <a class="skip-link" href="#main">К основному содержимому</a>
 
     <header class="site-header">
-      <a class="brand" href="#home" aria-label="Sakura Table">
+      <a class="brand" href="/" aria-label="Sakura Table">
         <span class="brand-mark" aria-hidden="true">ST</span>
         <span>
           <strong>Sakura Table</strong>
@@ -22,10 +22,11 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
 
       <nav id="site-nav" class="site-nav" aria-label="Основная навигация">
-        <a href="#menu">Меню</a>
-        <a href="#booking">Бронь</a>
-        <a href="#delivery">Доставка</a>
-        <a href="#location">Контакты</a>
+        <a href="/">Главная</a>
+        <a href="/catalog/">Каталог</a>
+        <a href="/delivery/">Доставка</a>
+        <a href="/booking/">Бронь</a>
+        <a href="/about/">О нас</a>
       </nav>
 
       <div class="account-actions">
@@ -47,14 +48,14 @@
     </header>
 
     <main id="main">
-      <section id="home" class="hero">
+      <section id="home" class="hero home-only">
         <div class="hero-copy">
           <p class="eyebrow">Сезонное японское меню</p>
           <h1>Суши-бар с горячей кухней, саке и доставкой в один клик.</h1>
           <p class="hero-text">Роллы, нигири, сеты, васаби, гари, соусы и теплые гарниры. Забронируйте столик или соберите доставку после входа в аккаунт.</p>
           <div class="hero-actions">
-            <a class="primary-btn" href="#booking">Забронировать стол</a>
-            <a class="secondary-btn" href="#menu">Выбрать из меню</a>
+            <a class="primary-btn" href="/booking/">Забронировать стол</a>
+            <a class="secondary-btn" href="/catalog/">Выбрать из меню</a>
           </div>
         </div>
         <figure class="hero-photo">
@@ -62,7 +63,7 @@
         </figure>
       </section>
 
-      <section class="photo-band" aria-label="Атмосфера ресторана">
+      <section class="photo-band home-only" aria-label="Атмосфера ресторана">
         <article>
           <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=900&q=80" alt="Свежие роллы с лососем и соусом">
           <h2>Роллы готовятся под заказ</h2>
@@ -75,7 +76,37 @@
         </article>
       </section>
 
-      <section id="menu" class="section">
+      <section class="section home-only home-hub">
+        <div class="section-heading">
+          <p class="eyebrow">Sakura Table online</p>
+          <h2>Все важное вынесено на отдельные страницы</h2>
+          <p>На главной остается витрина ресторана, а каталог, корзина, доставка, бронь, профиль и история ресторана открываются как самостоятельные разделы.</p>
+        </div>
+        <div class="hub-grid">
+          <a class="hub-card" href="/catalog/">
+            <span>01</span>
+            <h3>Каталог</h3>
+            <p>Суши, роллы, сеты, саке, гарниры и соусы с фильтрами и PDF-меню.</p>
+          </a>
+          <a class="hub-card" href="/cart/">
+            <span>02</span>
+            <h3>Корзина</h3>
+            <p>Редактирование количества, итоговая сумма и оформление доставки.</p>
+          </a>
+          <a class="hub-card" href="/booking/">
+            <span>03</span>
+            <h3>Бронь</h3>
+            <p>Заявка на столик сразу попадает в Django Admin.</p>
+          </a>
+          <a class="hub-card" href="/about/">
+            <span>04</span>
+            <h3>О нас</h3>
+            <p>История ресторана, контакты, часы работы и интерактивная карта.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="menu" class="section route-section">
         <div class="section-heading">
           <p class="eyebrow">Меню</p>
           <h2>Суши, роллы, саке, гарниры и соусы</h2>
@@ -94,7 +125,7 @@
         <div class="menu-grid" data-menu-grid></div>
       </section>
 
-      <section id="booking" class="section split-section">
+      <section id="booking" class="section split-section route-section">
         <div class="section-heading">
           <p class="eyebrow">Бронирование</p>
           <h2>Столик для ужина, дегустации или встречи</h2>
@@ -127,7 +158,7 @@
         </form>
       </section>
 
-      <section id="delivery" class="section delivery-layout">
+      <section id="delivery" class="section delivery-layout route-section">
         <div class="section-heading">
           <p class="eyebrow">Доставка</p>
           <h2>Заказ суши домой или в офис</h2>
@@ -146,7 +177,109 @@
         </div>
       </section>
 
-      <section id="chat" class="section chat-section">
+      <section id="cart-page" class="section split-section route-section">
+        <div class="section-heading">
+          <p class="eyebrow">Корзина</p>
+          <h2>Проверьте заказ перед доставкой</h2>
+          <p>Количество блюд можно менять здесь. Корзина сохраняется в браузере, поэтому позиции не пропадают при переходе между страницами сайта.</p>
+          <div data-cart-items class="cart-items"></div>
+          <p class="cart-total">Итого: <strong data-cart-total>0 ₸</strong></p>
+          <a class="secondary-btn" href="/catalog/">Вернуться в каталог</a>
+        </div>
+        <form class="panel form-grid" data-delivery-form>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel" required>
+          </label>
+          <label class="wide">Адрес
+            <input name="address" autocomplete="street-address" required>
+          </label>
+          <label>Время
+            <select name="timeWindow">
+              <option value="asap">Как можно скорее</option>
+              <option value="18:00-19:00">18:00-19:00</option>
+              <option value="19:00-20:00">19:00-20:00</option>
+              <option value="20:00-21:00">20:00-21:00</option>
+            </select>
+          </label>
+          <label>Оплата
+            <select name="payment">
+              <option value="card">Картой курьеру</option>
+              <option value="cash">Наличными</option>
+              <option value="online">Онлайн</option>
+            </select>
+          </label>
+          <div class="payment-details wide" data-payment-details hidden>
+            <p>Для безопасности сайт не хранит полный номер карты и CVV. Для онлайн-оплаты укажите данные перевода, чтобы администратор сверил платеж.</p>
+            <label>Способ онлайн-оплаты
+              <select name="onlineMethod">
+                <option value="transfer_phone">Переводом на номер</option>
+                <option value="card_last4">Картой, последние 4 цифры</option>
+              </select>
+            </label>
+            <label>Имя плательщика
+              <input name="payerName" autocomplete="cc-name">
+            </label>
+            <label>Телефон для перевода
+              <input name="transferPhone" type="tel" placeholder="+7 700 000 00 00">
+            </label>
+            <label>Последние 4 цифры карты
+              <input name="cardLast4" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="1234">
+            </label>
+            <label class="wide">Комментарий к оплате
+              <input name="paymentComment" placeholder="Например: Kaspi перевод, чек отправлен в WhatsApp">
+            </label>
+          </div>
+          <label class="wide">Комментарий
+            <textarea name="notes" rows="3"></textarea>
+          </label>
+          <button class="primary-btn wide" type="submit">Вызвать доставку</button>
+          <p class="form-message wide" data-delivery-message role="status"></p>
+        </form>
+      </section>
+
+      <section id="profile-page" class="section split-section route-section">
+        <div class="profile-aside">
+          <p class="eyebrow">Личный кабинет</p>
+          <h2>Профиль гостя</h2>
+          <div class="profile-avatar-card">
+            <div class="avatar-preview">
+              <img data-avatar-preview alt="Фото профиля" hidden>
+              <span data-avatar-initials>ST</span>
+            </div>
+            <p>Фото можно вставить ссылкой или выбрать с устройства. При выборе файла картинка сохранится в базе как изображение профиля.</p>
+          </div>
+        </div>
+        <form class="panel form-grid" data-profile-form>
+          <label>Имя
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>Телефон
+            <input name="phone" type="tel" autocomplete="tel">
+          </label>
+          <label class="wide">Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label class="wide">Фото профиля
+            <input name="avatarUrl" placeholder="https://... или выберите файл ниже">
+          </label>
+          <label class="wide">Загрузить фото
+            <input name="avatarFile" type="file" accept="image/*" data-avatar-file>
+          </label>
+          <label class="wide password-label">Новый пароль
+            <span class="password-field">
+              <input name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[^A-Za-z0-9]).{8,}" placeholder="Оставьте пустым, если не меняете">
+              <button class="icon-inline" type="button" data-toggle-password aria-label="Показать пароль">◎</button>
+            </span>
+          </label>
+          <button class="primary-btn wide" type="submit">Сохранить профиль</button>
+          <p class="form-message wide" data-profile-message role="status"></p>
+        </form>
+      </section>
+
+      <section id="chat" class="section chat-section home-only">
         <div class="section-heading">
           <p class="eyebrow">AI-консьерж</p>
           <h2>Спросите про меню, соусы, саке или бронь</h2>
@@ -154,10 +287,27 @@
         </div>
       </section>
 
-      <section id="location" class="section location-section">
+      <section id="about" class="section location-section route-section">
         <div class="section-heading">
+          <p class="eyebrow">О нас</p>
+          <h2>Sakura Table - ресторан суши, роллов и саке</h2>
+          <p>Мы соединяем спокойную японскую подачу, свежие продукты и удобный онлайн-сервис: каталог, бронь, доставка, личный кабинет и поддержка оператора работают из одной системы.</p>
+        </div>
+        <div class="about-grid">
+          <article>
+            <img src="https://images.unsplash.com/photo-1607301405390-d831c242f59c?auto=format&fit=crop&w=900&q=80" alt="Повар готовит суши за барной стойкой">
+            <h3>Кухня под заказ</h3>
+            <p>Роллы собираются после заказа, рис остается теплым, а соусы подбираются под рыбу, гарниры и саке.</p>
+          </article>
+          <article>
+            <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80" alt="Роллы и суши в коробке доставки">
+            <h3>Доставка и бронь</h3>
+            <p>Заявки сразу сохраняются в базе Django, поэтому администратор видит заказы, брони и данные гостей в панели управления.</p>
+          </article>
+        </div>
+        <div class="section-heading location-heading">
           <p class="eyebrow">Где мы</p>
-          <h2>Карта и контакты ресторана</h2>
+          <h2>Карта и контакты</h2>
           <p>Приходите на ужин, дегустацию саке или забирайте заказ с собой. Точка на карте открывается и масштабируется прямо на сайте.</p>
         </div>
         <div class="location-layout">
@@ -194,11 +344,11 @@
         <div>
           <h3>Ссылки</h3>
           <nav class="footer-links" aria-label="Быстрые ссылки">
-            <a href="#home">Главная</a>
-            <a href="#menu">Меню</a>
-            <a href="#booking">Бронь</a>
-            <a href="#delivery">Доставка</a>
-            <a href="#location">Контакты</a>
+            <a href="/">Главная</a>
+            <a href="/catalog/">Каталог</a>
+            <a href="/booking/">Бронь</a>
+            <a href="/delivery/">Доставка</a>
+            <a href="/about/">О нас</a>
           </nav>
         </div>
         <div>

@@ -18,6 +18,7 @@ def normalize_tags(value):
 class CustomerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customer_profile")
     phone = models.CharField("Телефон", max_length=64, blank=True)
+    avatar_url = models.TextField("Фото профиля", blank=True)
     created_at = models.DateTimeField("Создан", auto_now_add=True)
     updated_at = models.DateTimeField("Обновлен", auto_now=True)
 

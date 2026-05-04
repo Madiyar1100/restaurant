@@ -174,6 +174,11 @@ button {
   border-color: var(--lacquer);
 }
 
+.site-nav a.active {
+  color: var(--text);
+  border-color: var(--lacquer);
+}
+
 .account-actions {
   display: flex;
   justify-content: flex-end;
@@ -183,9 +188,19 @@ button {
 
 .user-chip {
   max-width: 150px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.user-chip img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .nav-toggle,
@@ -399,6 +414,66 @@ h3 {
 
 .section {
   padding: clamp(42px, 7vw, 88px) clamp(18px, 5vw, 72px);
+}
+
+.route-section.route-section {
+  display: none;
+}
+
+body[data-page="catalog"] #menu,
+body[data-page="booking"] #booking,
+body[data-page="delivery"] #delivery,
+body[data-page="cart"] #cart-page,
+body[data-page="profile"] #profile-page,
+body[data-page="about"] #about {
+  display: grid;
+}
+
+body[data-page="catalog"] #menu,
+body[data-page="about"] #about {
+  display: block;
+}
+
+body:not([data-page="home"]) .home-only {
+  display: none;
+}
+
+.home-hub {
+  padding-top: clamp(18px, 4vw, 48px);
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.hub-card {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--soft-shadow);
+  padding: 20px;
+  text-decoration: none;
+}
+
+.hub-card span {
+  color: var(--lacquer);
+  font-weight: 900;
+}
+
+.hub-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.hub-card:hover {
+  border-color: var(--lacquer);
+  transform: translateY(-2px);
 }
 
 .section-heading {
@@ -763,6 +838,42 @@ dialog::backdrop {
   padding-top: clamp(34px, 5vw, 64px);
 }
 
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.about-grid article,
+.profile-avatar-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--soft-shadow);
+  overflow: hidden;
+}
+
+.about-grid img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.about-grid h3,
+.about-grid p {
+  padding-inline: 20px;
+}
+
+.about-grid p {
+  color: var(--muted);
+  padding-bottom: 20px;
+}
+
+.location-heading {
+  margin-top: 10px;
+}
+
 .location-layout {
   display: grid;
   grid-template-columns: minmax(240px, 0.38fr) minmax(0, 1fr);
@@ -896,6 +1007,43 @@ dialog::backdrop {
   padding: 18px clamp(18px, 5vw, 72px);
   color: var(--muted);
   text-align: center;
+}
+
+.profile-aside {
+  min-width: 0;
+}
+
+.profile-avatar-card {
+  padding: 20px;
+  margin-top: 24px;
+}
+
+.profile-avatar-card p {
+  color: var(--muted);
+}
+
+.avatar-preview {
+  width: 138px;
+  height: 138px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-preview span {
+  color: var(--lacquer);
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  font-weight: 900;
 }
 
 .sr-only {
@@ -1065,6 +1213,8 @@ dialog::backdrop {
   .delivery-card,
   .location-layout,
   .footer-grid,
+  .hub-grid,
+  .about-grid,
   .photo-band {
     grid-template-columns: 1fr;
   }

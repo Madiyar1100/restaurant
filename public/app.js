@@ -16,13 +16,28 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const money = (value) => `${Number(value || 0).toLocaleString("ru-RU")} ₸`;
 
 const menuImages = {
-  sets: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=700&q=80",
-  sushi: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=700&q=80",
-  rolls: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=700&q=80",
-  drinks: "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=700&q=80",
-  sides: "https://images.unsplash.com/photo-1626201850122-a8fcb16665e1?auto=format&fit=crop&w=700&q=80",
-  sauces: "https://images.unsplash.com/photo-1604908554027-111cf6cf45d2?auto=format&fit=crop&w=700&q=80"
+  sets: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=725&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  sushi: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  rolls: "https://plus.unsplash.com/premium_photo-1723874570807-570c56b41e4e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  drinks: "https://images.unsplash.com/photo-1719464455071-71364721466a?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  sides: "https://images.unsplash.com/photo-1592180387432-d735c59eee1a?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  sauces: "https://images.unsplash.com/photo-1599253334613-90aaa517759c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 };
+
+const dishImages = {
+  "Omakase Set": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
+  "Akami Nigiri": "https://images.unsplash.com/photo-1582450871972-ab5ca641643d?auto=format&fit=crop&w=900&q=80",
+  "Salmon Yuzu Roll": "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=900&q=80",
+  "Unagi Dragon Roll": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
+  "Sake Junmai": "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80",
+  "Edamame Shio": "https://images.unsplash.com/photo-1626201850122-a8fcb16665e1?auto=format&fit=crop&w=900&q=80",
+  "Sauce Flight": "https://images.unsplash.com/photo-1604908554027-111cf6cf45d2?auto=format&fit=crop&w=900&q=80",
+  "Wasabi & Gari Set": "https://images.unsplash.com/photo-1592180387432-d735c59eee1a?auto=format&fit=crop&w=900&q=80"
+};
+
+function imageFor(item) {
+  return item.imageUrl || dishImages[item.name] || menuImages[item.category] || menuImages.rolls;
+}
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -187,7 +202,7 @@ function renderMenu() {
   const items = state.menu.filter((item) => state.filter === "all" || item.category === state.filter);
   grid.innerHTML = items.map((item) => `
     <article class="menu-card">
-      <img class="menu-art" src="${item.imageUrl || menuImages[item.category] || menuImages.rolls}" alt="${escapeHtml(item.name)}" loading="lazy">
+      <img class="menu-art" src="${imageFor(item)}" alt="${escapeHtml(item.name)}" loading="lazy">
       <div>
         <p class="eyebrow">${categoryLabel(item.category)}</p>
         <h3>${escapeHtml(item.name)}</h3>

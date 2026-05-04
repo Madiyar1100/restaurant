@@ -42,7 +42,7 @@ class MenuItemAdminForm(forms.ModelForm):
         model = MenuItem
         fields = ("name", "category", "price", "description", "tags", "image_url", "available")
         help_texts = {
-            "image_url": "Вставьте прямую https-ссылку именно на файл картинки. Не страницу Unsplash вида /photos/..., а Copy image address, обычно images.unsplash.com/... Если оставить пустым, сайт покажет стандартную картинку категории.",
+            "image_url": "Вставьте прямую https-ссылку именно на файл картинки для этого блюда. Две позиции из одной категории могут иметь разные фото. Не страницу Unsplash вида /photos/..., а Copy image address, обычно images.unsplash.com/... Если оставить пустым, сайт покажет стандартную картинку категории.",
         }
 
     def __init__(self, *args, **kwargs):

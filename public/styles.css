@@ -759,6 +759,145 @@ dialog::backdrop {
   font-size: 0.82rem;
 }
 
+.location-section {
+  padding-top: clamp(34px, 5vw, 64px);
+}
+
+.location-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.38fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.location-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--soft-shadow);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.location-card h3 {
+  margin-bottom: 16px;
+}
+
+.location-card p {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+.map-shell {
+  min-height: 390px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  box-shadow: var(--soft-shadow);
+  overflow: hidden;
+}
+
+.map-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 390px;
+  display: block;
+  border: 0;
+  filter: saturate(0.92) contrast(0.98);
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--text) 6%, transparent), transparent 42%),
+    color-mix(in srgb, var(--surface-2) 72%, var(--bg));
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(180px, 0.65fr) minmax(220px, 0.75fr);
+  gap: clamp(28px, 6vw, 96px);
+  padding: clamp(42px, 7vw, 76px) clamp(18px, 5vw, 72px);
+}
+
+.site-footer h2,
+.site-footer h3 {
+  margin: 0 0 20px;
+  color: var(--lacquer);
+}
+
+.site-footer h2 {
+  font-size: 1.55rem;
+  text-transform: uppercase;
+}
+
+.site-footer h3 {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 1.15rem;
+}
+
+.footer-brand p {
+  max-width: 460px;
+  margin: 0 0 24px;
+  color: var(--muted);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.social-link {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.social-link:hover {
+  border-color: var(--lacquer);
+  background: var(--lacquer);
+  color: #fff8eb;
+}
+
+.footer-links {
+  display: grid;
+  gap: 12px;
+}
+
+.footer-links a,
+.footer-contact a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-contact a:hover {
+  color: var(--lacquer);
+}
+
+.footer-contact {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  list-style: none;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--line);
+  padding: 18px clamp(18px, 5vw, 72px);
+  color: var(--muted);
+  text-align: center;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -924,6 +1063,8 @@ dialog::backdrop {
   .split-section,
   .delivery-layout,
   .delivery-card,
+  .location-layout,
+  .footer-grid,
   .photo-band {
     grid-template-columns: 1fr;
   }
@@ -985,6 +1126,11 @@ dialog::backdrop {
 
   .menu-grid {
     grid-template-columns: 1fr;
+  }
+
+  .map-shell,
+  .map-frame {
+    min-height: 320px;
   }
 }
 

@@ -406,9 +406,13 @@ h3 {
   margin-bottom: 28px;
 }
 
-.section-heading p:last-child {
+.section-heading > p:not(.eyebrow) {
   max-width: 680px;
   color: var(--muted);
+}
+
+.menu-download {
+  margin-top: 14px;
 }
 
 .filters,
@@ -438,13 +442,15 @@ h3 {
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 320px));
   gap: 18px;
+  justify-content: start;
 }
 
 .menu-card {
   display: grid;
   overflow: hidden;
+  width: 100%;
 }
 
 .menu-card > div,
@@ -781,6 +787,21 @@ dialog::backdrop {
   transform: translateY(0);
 }
 
+.payment-details {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+}
+
+.payment-details p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 [hidden] {
   display: none !important;
 }
@@ -953,6 +974,10 @@ dialog::backdrop {
   }
 
   .cart-row {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-grid {
     grid-template-columns: 1fr;
   }
 }

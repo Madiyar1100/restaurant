@@ -79,6 +79,7 @@
           <p class="eyebrow">Меню</p>
           <h2>Суши, роллы, саке, гарниры и соусы</h2>
           <p>Добавляйте позиции в корзину. Количество и состав заказа редактируются в корзине в шапке.</p>
+          <a class="secondary-btn menu-download" href="/menu.pdf" target="_blank" rel="noopener">Скачать PDF меню</a>
         </div>
         <div class="filters" role="list" aria-label="Фильтр меню">
           <button class="filter-btn active" type="button" data-filter="all">Все</button>
@@ -262,6 +263,27 @@
               <option value="online">Онлайн</option>
             </select>
           </label>
+          <div class="payment-details wide" data-payment-details hidden>
+            <p>Для безопасности сайт не хранит полный номер карты и CVV. Для онлайн-оплаты укажите данные перевода, чтобы администратор сверил платеж.</p>
+            <label>Способ онлайн-оплаты
+              <select name="onlineMethod">
+                <option value="transfer_phone">Переводом на номер</option>
+                <option value="card_last4">Картой, последние 4 цифры</option>
+              </select>
+            </label>
+            <label>Имя плательщика
+              <input name="payerName" autocomplete="cc-name">
+            </label>
+            <label>Телефон для перевода
+              <input name="transferPhone" type="tel" placeholder="+7 700 000 00 00">
+            </label>
+            <label>Последние 4 цифры карты
+              <input name="cardLast4" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="1234">
+            </label>
+            <label class="wide">Комментарий к оплате
+              <input name="paymentComment" placeholder="Например: Kaspi перевод, чек отправлен в WhatsApp">
+            </label>
+          </div>
           <label class="wide">Комментарий
             <textarea name="notes" rows="3"></textarea>
           </label>

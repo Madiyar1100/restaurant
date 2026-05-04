@@ -28,6 +28,7 @@ async function api(path, options = {}) {
   const response = await fetch(path, {
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
     credentials: "same-origin",
+    cache: "no-store",
     ...options
   });
   const data = await response.json().catch(() => ({}));
@@ -54,7 +55,7 @@ function toast(message) {
   node.textContent = message;
   node.classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => node.classList.remove("show"), 3200);
+  toast.timer = setTimeout(() => node.classList.remove("show"), 2000);
 }
 
 function setMessage(selector, message, isError = false) {
@@ -225,6 +226,17 @@ function renderCart() {
   $("[data-cart-count]").textContent = String(count);
 }
 
+function updatePaymentDetails() {
+  const form = $("[data-delivery-form]");
+  const details = $("[data-payment-details]", form);
+  const payment = $("select[name='payment']", form)?.value;
+  if (!details) return;
+  details.hidden = payment !== "online";
+  $$("input, select", details).forEach((input) => {
+    input.disabled = payment !== "online";
+  });
+}
+
 function addToCart(id) {
   if (!ensureLogin("Для доставки нужен аккаунт.")) return;
   const item = state.menu.find((entry) => entry.id === id);
@@ -267,6 +279,7 @@ function openCart() {
   prefillPersonalForms();
   setMessage("[data-delivery-message]", "");
   renderCart();
+  updatePaymentDetails();
   openDialog("[data-cart-dialog]");
 }
 
@@ -401,13 +414,18 @@ function attachEvents() {
 
   document.addEventListener("input", (event) => {
     const qtyInput = event.target.closest("[data-cart-qty]");
-    if (!qtyInput) return;
+    if (!qtyInput) {
+      if (event.target.closest("[data-delivery-form] select[name='payment']")) updatePaymentDetails();
+      return;
+    }
     const row = state.cart.get(qtyInput.dataset.cartQty);
     if (!row) return;
     row.quantity = Math.max(1, Number(qtyInput.value || 1));
     state.cart.set(row.item.id, row);
     renderCart();
   });
+
+  $("[data-delivery-form] select[name='payment']").addEventListener("change", updatePaymentDetails);
 
   $("[data-reservation-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -435,6 +453,10 @@ function attachEvents() {
       ...formData(form),
       items: cartRows().map((row) => ({ menuItemId: row.item.id, quantity: row.quantity }))
     };
+    if (data.payment === "online" && !data.transferPhone && !data.cardLast4) {
+      setMessage("[data-delivery-message]", "Для онлайн-оплаты укажите телефон перевода или последние 4 цифры карты.", true);
+      return;
+    }
     try {
       await api("/api/deliveries", { method: "POST", body: JSON.stringify(data) });
       form.reset();

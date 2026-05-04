@@ -7,8 +7,9 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -95,6 +96,29 @@ def menu_payload(item):
     }
 
 
+def payment_details_from(data):
+    if text(data.get("payment")) != DeliveryOrder.Payment.ONLINE:
+        return ""
+    rows = []
+    method = text(data.get("onlineMethod"))
+    method_label = {
+        "transfer_phone": "Переводом на номер",
+        "card_last4": "Картой, последние 4 цифры",
+    }.get(method, method or "Онлайн")
+    rows.append(f"Способ: {method_label}")
+    if text(data.get("payerName")):
+        rows.append(f"Плательщик: {text(data.get('payerName'))}")
+    if text(data.get("transferPhone")):
+        rows.append(f"Телефон перевода: {text(data.get('transferPhone'))}")
+    if text(data.get("cardLast4")):
+        digits = "".join(char for char in text(data.get("cardLast4")) if char.isdigit())[-4:]
+        if digits:
+            rows.append(f"Последние 4 цифры карты: {digits}")
+    if text(data.get("paymentComment")):
+        rows.append(f"Комментарий: {text(data.get('paymentComment'))}")
+    return "\n".join(rows)
+
+
 def message_payload(message):
     return {
         "id": str(message.id),
@@ -117,10 +141,85 @@ def health(request):
     )
 
 
+@never_cache
 @require_http_methods(["GET"])
 def menu(request):
     items = MenuItem.objects.all()
     return JsonResponse({"menu": [menu_payload(item) for item in items]})
+
+
+@never_cache
+@require_http_methods(["GET"])
+def menu_pdf(request):
+    try:
+        from reportlab.lib import colors
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+        from reportlab.lib.units import mm
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+    except ImportError:
+        return json_error("PDF генератор не установлен. Проверьте dependency reportlab.", 503)
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="sakura-menu.pdf"'
+
+    font_name = "Helvetica"
+    for font_path in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+    ):
+        try:
+            pdfmetrics.registerFont(TTFont("SakuraSans", font_path))
+            font_name = "SakuraSans"
+            break
+        except Exception:
+            continue
+
+    doc = SimpleDocTemplate(response, pagesize=A4, rightMargin=16 * mm, leftMargin=16 * mm, topMargin=16 * mm, bottomMargin=16 * mm)
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle("SakuraTitle", parent=styles["Title"], fontName=font_name, fontSize=24, leading=30, textColor=colors.HexColor("#a91f2a"))
+    section_style = ParagraphStyle("SakuraSection", parent=styles["Heading2"], fontName=font_name, fontSize=14, leading=18, spaceBefore=12)
+    text_style = ParagraphStyle("SakuraText", parent=styles["BodyText"], fontName=font_name, fontSize=9, leading=12)
+    story = [Paragraph("Sakura Table - меню", title_style), Spacer(1, 8 * mm)]
+
+    categories = dict(MenuItem.Category.choices)
+    for category, label in categories.items():
+        items = MenuItem.objects.filter(category=category, available=True).order_by("name")
+        if not items.exists():
+            continue
+        story.append(Paragraph(label, section_style))
+        data = [["Блюдо", "Описание", "Цена"]]
+        for item in items:
+            data.append([
+                Paragraph(item.name, text_style),
+                Paragraph(item.description or "", text_style),
+                Paragraph(f"{item.price} ₸", text_style),
+            ])
+        table = Table(data, colWidths=[42 * mm, 92 * mm, 28 * mm])
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#a91f2a")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("FONTNAME", (0, 0), (-1, -1), font_name),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#d7c7ae")),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#fff8eb"), colors.HexColor("#f4ead8")]),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        story.append(table)
+        story.append(Spacer(1, 4 * mm))
+
+    doc.build(story)
+    return response
 
 
 @csrf_exempt
@@ -274,6 +373,7 @@ def deliveries(request):
             address=text(data.get("address")),
             time_window=text(data.get("timeWindow"), "asap"),
             payment=text(data.get("payment"), DeliveryOrder.Payment.CARD),
+            payment_details=payment_details_from(data),
             notes=text(data.get("notes")),
         )
         total = 0

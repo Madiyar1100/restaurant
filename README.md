@@ -276,6 +276,7 @@ GROQ_API_KEY
 ```text
 GET /api/health
 GET /api/menu
+GET /menu.pdf
 POST /api/register
 POST /api/login
 PATCH /api/me
@@ -285,3 +286,24 @@ POST /api/chat
 POST /api/chat/operator
 GET/POST /api/chat/operator/messages
 ```
+
+## Что делать после этих правок на Render
+
+После push в GitHub выполните:
+
+```text
+Manual Deploy -> Clear build cache & deploy
+```
+
+Это важно, потому что добавлена новая зависимость `reportlab` для PDF и новая миграция `0002_deliveryorder_payment_details`.
+
+После деплоя проверьте:
+
+```text
+https://restaurant-8c92.onrender.com/api/menu
+https://restaurant-8c92.onrender.com/menu.pdf
+```
+
+Если новая позиция меню не появилась на сайте, проверьте в `/admin/ -> Меню`, что у нее включена галочка `Доступно`, а затем обновите страницу сайта. API меню теперь отдается без кеша, поэтому после refresh новая позиция должна появляться.
+
+Для онлайн-оплаты сайт не хранит полный номер карты и CVV. В заказ сохраняются только безопасные данные сверки оплаты: способ, имя плательщика, телефон перевода, последние 4 цифры карты и комментарий. Эти данные видны в `/admin/ -> Заказы доставки -> Данные оплаты`.

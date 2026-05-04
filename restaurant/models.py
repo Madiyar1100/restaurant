@@ -108,6 +108,7 @@ class DeliveryOrder(models.Model):
     address = models.CharField("Адрес", max_length=280)
     time_window = models.CharField("Время доставки", max_length=80, default="asap")
     payment = models.CharField("Оплата", max_length=24, choices=Payment.choices, default=Payment.CARD)
+    payment_details = models.TextField("Данные оплаты", blank=True)
     notes = models.TextField("Комментарий", blank=True)
     total = models.PositiveIntegerField("Итого, ₸", default=0)
     status = models.CharField("Статус", max_length=24, choices=Status.choices, default=Status.NEW)

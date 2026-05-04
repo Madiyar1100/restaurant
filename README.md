@@ -257,6 +257,14 @@ https://restaurant-8c92.onrender.com/api/health
 
 Если там `false`, значит Render не видит `GROQ_API_KEY` или сервис еще не перезапущен после изменения Environment Variables.
 
+Если `aiConfigured: true`, но чат отвечает, что Groq отклонил ключ API, значит Django ключ видит, но сам Groq возвращает 401/403. Обычно причины такие:
+
+- в Render значение `GROQ_API_KEY` вставлено с пробелом или кавычками;
+- ключ был показан публично и Groq его заблокировал/отозвал;
+- ключ удален или неактивен в Groq Console.
+
+Решение: создайте новый ключ в Groq Console, вставьте его в Render `Environment -> GROQ_API_KEY` без кавычек и пробелов, затем выполните `Manual Deploy -> Clear build cache & deploy`.
+
 После изменения переменных окружения на Render сделайте:
 
 ```text

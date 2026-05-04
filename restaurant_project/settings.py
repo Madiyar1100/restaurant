@@ -139,5 +139,5 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your_groq_api_key_here")
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your_groq_api_key_here").strip().strip("\"'")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant").strip().strip("\"'")

@@ -442,7 +442,7 @@ def ask_groq(messages):
         except json.JSONDecodeError:
             pass
         if error.code in {401, 403}:
-            raise RuntimeError("Groq отклонил ключ API. Проверьте GROQ_API_KEY в Render Environment и перезапустите deploy.")
+            raise RuntimeError("Groq отклонил ключ API. Удалите лишние пробелы/кавычки в GROQ_API_KEY или создайте новый ключ в Groq Console и перезапустите deploy.")
         raise RuntimeError(details or f"Groq вернул ошибку {error.code}")
     except (urllib.error.URLError, TimeoutError) as error:
         raise RuntimeError(f"Не удалось подключиться к Groq: {error}")

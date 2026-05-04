@@ -54,8 +54,15 @@ function toast(message) {
   const node = $("[data-toast]");
   node.textContent = message;
   node.classList.add("show");
+  node.setAttribute("aria-hidden", "false");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => node.classList.remove("show"), 2000);
+  toast.timer = setTimeout(() => {
+    node.classList.remove("show");
+    node.setAttribute("aria-hidden", "true");
+    setTimeout(() => {
+      if (!node.classList.contains("show")) node.textContent = "";
+    }, 220);
+  }, 2000);
 }
 
 function setMessage(selector, message, isError = false) {

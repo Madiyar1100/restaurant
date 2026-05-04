@@ -2,6 +2,19 @@ from django.conf import settings
 from django.db import models
 
 
+def normalize_tags(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(tag).strip() for tag in value if str(tag).strip()]
+    if isinstance(value, str):
+        value = value.strip()
+        if not value:
+            return []
+        return [tag.strip() for tag in value.replace(";", ",").split(",") if tag.strip()]
+    return [str(value).strip()] if str(value).strip() else []
+
+
 class CustomerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customer_profile")
     phone = models.CharField("Телефон", max_length=64, blank=True)
@@ -42,6 +55,10 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.tags = normalize_tags(self.tags)
+        super().save(*args, **kwargs)
 
 
 class Reservation(models.Model):

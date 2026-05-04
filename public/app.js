@@ -162,6 +162,18 @@ function categoryLabel(category) {
   }[category] || category;
 }
 
+function tagsFor(item) {
+  if (Array.isArray(item.tags)) return item.tags;
+  if (typeof item.tags === "string") {
+    return item.tags
+      .replace(/;/g, ",")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 function renderMenu() {
   const grid = $("[data-menu-grid]");
   const items = state.menu.filter((item) => state.filter === "all" || item.category === state.filter);
@@ -173,7 +185,7 @@ function renderMenu() {
         <h3>${escapeHtml(item.name)}</h3>
         <p>${escapeHtml(item.description)}</p>
         <div class="tag-row">
-          ${(item.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+          ${tagsFor(item).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
           ${item.available ? "" : `<span class="tag">нет в наличии</span>`}
         </div>
       </div>
@@ -485,7 +497,7 @@ function attachChatEvents() {
       pending.textContent = data.answer;
       state.chatHistory.push({ role: "user", content: message }, { role: "assistant", content: data.answer });
     } catch (error) {
-      pending.textContent = "AI-чат пока недоступен. Проверьте GROQ_API_KEY на сервере.";
+      pending.textContent = error.message || "AI-чат пока недоступен. Проверьте GROQ_API_KEY на сервере.";
     }
   });
 }
@@ -497,7 +509,7 @@ async function callOperator() {
     state.operatorMode = true;
     state.operatorLastCount = 0;
     $("[data-chat-note]").textContent = "Оператор вызван. Ответ администратора появится здесь автоматически.";
-    pushChat("assistant", "Оператор подключится в этом чате. Админ отвечает через Django Admin в разделе диалогов.");
+    pushChat("assistant", "Оператор скоро подключится в этом чате.");
     renderOperatorMessages(data.messages || []);
     clearInterval(state.operatorPoll);
     state.operatorPoll = setInterval(loadOperatorMessages, 5000);

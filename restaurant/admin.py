@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.models import User
@@ -10,6 +11,7 @@ from .models import (
     DeliveryOrder,
     MenuItem,
     Reservation,
+    normalize_tags,
 )
 
 
@@ -29,12 +31,35 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 
+class MenuItemAdminForm(forms.ModelForm):
+    tags = forms.CharField(
+        label="Теги",
+        required=False,
+        help_text="Пишите через запятую: лосось, острый, теплый. Можно оставить пустым.",
+    )
+
+    class Meta:
+        model = MenuItem
+        fields = ("name", "category", "price", "description", "tags", "image_url", "available")
+        help_texts = {
+            "image_url": "Вставьте прямую https-ссылку именно на файл картинки. Не страницу Unsplash вида /photos/..., а Copy image address, обычно images.unsplash.com/... Если оставить пустым, сайт покажет стандартную картинку категории.",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["tags"].initial = ", ".join(normalize_tags(self.instance.tags))
+
+    def clean_tags(self):
+        return normalize_tags(self.cleaned_data.get("tags"))
+
+
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
+    form = MenuItemAdminForm
     list_display = ("name", "category", "price", "available", "updated_at")
     list_filter = ("category", "available")
     search_fields = ("name", "description")
-    list_editable = ("price", "available")
 
 
 @admin.register(Reservation)

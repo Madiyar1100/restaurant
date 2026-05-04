@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from .models import ChatMessage, ChatThread, CustomerProfile, DeliveryItem, DeliveryOrder, MenuItem, Reservation
+from .models import ChatMessage, ChatThread, CustomerProfile, DeliveryItem, DeliveryOrder, MenuItem, Reservation, normalize_tags
 
 
 SPECIAL_RE = re.compile(r"[^A-Za-z0-9]")
@@ -89,7 +89,7 @@ def menu_payload(item):
         "category": item.category,
         "price": item.price,
         "description": item.description,
-        "tags": item.tags or [],
+        "tags": normalize_tags(item.tags),
         "imageUrl": item.image_url,
         "available": item.available,
     }
@@ -106,7 +106,15 @@ def message_payload(message):
 
 @require_http_methods(["GET"])
 def health(request):
-    return JsonResponse({"ok": True, "service": "Sakura Table Django", "time": timezone.now().isoformat()})
+    return JsonResponse(
+        {
+            "ok": True,
+            "service": "Sakura Table Django",
+            "time": timezone.now().isoformat(),
+            "aiConfigured": bool(settings.GROQ_API_KEY and not settings.GROQ_API_KEY.startswith("your_")),
+            "groqModel": settings.GROQ_MODEL,
+        }
+    )
 
 
 @require_http_methods(["GET"])
@@ -302,8 +310,8 @@ def restaurant_context():
 
 
 def ask_groq(messages):
-    if not settings.GROQ_API_KEY:
-        raise RuntimeError("AI-чат не настроен. Укажите GROQ_API_KEY.")
+    if not settings.GROQ_API_KEY or settings.GROQ_API_KEY.startswith("your_"):
+        raise RuntimeError("AI-чат не настроен: переменная GROQ_API_KEY пустая или оставлена примером.")
 
     payload = json.dumps(
         {
@@ -328,7 +336,16 @@ def ask_groq(messages):
             data = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         details = error.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(details or "Запрос к AI-провайдеру не выполнен")
+        try:
+            payload = json.loads(details)
+            details = payload.get("error", {}).get("message") or details
+        except json.JSONDecodeError:
+            pass
+        if error.code in {401, 403}:
+            raise RuntimeError("Groq отклонил ключ API. Проверьте GROQ_API_KEY в Render Environment и перезапустите deploy.")
+        raise RuntimeError(details or f"Groq вернул ошибку {error.code}")
+    except (urllib.error.URLError, TimeoutError) as error:
+        raise RuntimeError(f"Не удалось подключиться к Groq: {error}")
     return data.get("choices", [{}])[0].get("message", {}).get("content", "").strip() or "Уточните вопрос по меню, брони или доставке."
 
 
@@ -378,7 +395,7 @@ def operator_thread(request):
         ChatMessage.objects.create(
             thread=thread,
             sender=ChatMessage.Sender.SYSTEM,
-            text="Пользователь вызвал оператора. Ответьте в Django Admin внутри этого диалога.",
+            text="Новый запрос оператора.",
         )
     if not thread:
         return JsonResponse({"thread": None, "messages": []})
@@ -386,7 +403,7 @@ def operator_thread(request):
     return JsonResponse(
         {
             "thread": {"id": str(thread.id), "status": thread.status},
-            "messages": [message_payload(message) for message in thread.messages.all()],
+            "messages": [message_payload(message) for message in thread.messages.exclude(sender=ChatMessage.Sender.SYSTEM)],
         }
     )
 
@@ -417,6 +434,6 @@ def operator_messages(request):
     return JsonResponse(
         {
             "thread": {"id": str(thread.id), "status": thread.status},
-            "messages": [message_payload(message) for message in thread.messages.all()],
+            "messages": [message_payload(message) for message in thread.messages.exclude(sender=ChatMessage.Sender.SYSTEM)],
         }
     )

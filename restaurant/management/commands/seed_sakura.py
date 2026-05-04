@@ -77,9 +77,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         created = 0
         for row in MENU:
-            _, was_created = MenuItem.objects.get_or_create(
+            item, was_created = MenuItem.objects.get_or_create(
                 name=row["name"],
                 defaults={**row, "available": True},
             )
+            if not was_created and not item.image_url:
+                item.image_url = row["image_url"]
+                item.tags = row["tags"]
+                item.save()
             created += int(was_created)
         self.stdout.write(self.style.SUCCESS(f"Seeded menu. Created: {created}"))

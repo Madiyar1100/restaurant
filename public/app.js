@@ -9,7 +9,15 @@ const state = {
   operatorLastCount: 0,
   recognition: null,
   listening: false,
-  page: "home"
+  page: "home",
+  registrationMetrics: {
+    startedAt: 0,
+    actions: 0,
+    fittsSeconds: 0,
+    hickSeconds: 0,
+    lastPoint: null,
+    timer: null
+  }
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -26,13 +34,13 @@ const menuImages = {
 };
 
 const dishImages = {
-  "Omakase Set": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
+  "Omakase Set": "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=725&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   "Akami Nigiri": "https://images.unsplash.com/photo-1582450871972-ab5ca641643d?auto=format&fit=crop&w=900&q=80",
   "Salmon Yuzu Roll": "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=900&q=80",
   "Unagi Dragon Roll": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
   "Sake Junmai": "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80",
-  "Edamame Shio": "https://images.unsplash.com/photo-1626201850122-a8fcb16665e1?auto=format&fit=crop&w=900&q=80",
-  "Sauce Flight": "https://images.unsplash.com/photo-1604908554027-111cf6cf45d2?auto=format&fit=crop&w=900&q=80",
+  "Edamame Shio": "https://plus.unsplash.com/premium_photo-1666318300348-a4d0226d81ad?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "Sauce Flight": "https://images.unsplash.com/photo-1599253334613-90aaa517759c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   "Wasabi & Gari Set": "https://images.unsplash.com/photo-1592180387432-d735c59eee1a?auto=format&fit=crop&w=900&q=80"
 };
 
@@ -146,6 +154,73 @@ function generatePassword() {
   const chars = [specials[Math.floor(Math.random() * specials.length)], digits[Math.floor(Math.random() * digits.length)]];
   while (chars.length < 12) chars.push(all[Math.floor(Math.random() * all.length)]);
   return chars.sort(() => crypto.getRandomValues(new Uint32Array(1))[0] - 2147483648).join("");
+}
+
+function visibleRegisterControls() {
+  const form = $("[data-register-form]");
+  if (!form || form.hidden) return [];
+  return $$("input, button, select, textarea", form).filter((node) => !node.disabled && node.type !== "hidden");
+}
+
+function startRegistrationMetrics(reset = false) {
+  const metrics = state.registrationMetrics;
+  if (reset || !metrics.startedAt) {
+    metrics.startedAt = performance.now();
+    metrics.actions = 0;
+    metrics.fittsSeconds = 0;
+    metrics.lastPoint = null;
+  }
+  const choices = Math.max(1, visibleRegisterControls().length);
+  metrics.hickSeconds = 0.18 * Math.log2(choices + 1);
+  clearInterval(metrics.timer);
+  metrics.timer = setInterval(updateRegistrationMetrics, 250);
+  updateRegistrationMetrics();
+}
+
+function stopRegistrationMetrics() {
+  clearInterval(state.registrationMetrics.timer);
+  state.registrationMetrics.timer = null;
+  updateRegistrationMetrics();
+}
+
+function trackRegistrationAction(event) {
+  const form = event.target.closest?.("[data-register-form]");
+  if (!form || form.hidden) return;
+  startRegistrationMetrics(false);
+  const metrics = state.registrationMetrics;
+  metrics.actions += 1;
+
+  const targetRect = event.target.getBoundingClientRect?.();
+  if (targetRect && targetRect.width && targetRect.height) {
+    const targetPoint = {
+      x: targetRect.left + targetRect.width / 2,
+      y: targetRect.top + targetRect.height / 2
+    };
+    const fromPoint = metrics.lastPoint || {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    };
+    const distance = Math.hypot(targetPoint.x - fromPoint.x, targetPoint.y - fromPoint.y);
+    const width = Math.max(24, Math.min(targetRect.width, targetRect.height));
+    metrics.fittsSeconds += 0.1 + 0.12 * Math.log2(distance / width + 1);
+    metrics.lastPoint = targetPoint;
+  } else {
+    metrics.fittsSeconds += 0.12;
+  }
+  updateRegistrationMetrics();
+}
+
+function updateRegistrationMetrics() {
+  const holder = $("[data-register-metrics]");
+  if (!holder) return;
+  const metrics = state.registrationMetrics;
+  const elapsed = metrics.startedAt ? Math.max(0, (performance.now() - metrics.startedAt) / 1000) : 0;
+  const time = $("[data-register-time]", holder);
+  const actions = $("[data-register-actions]", holder);
+  const models = $("[data-register-models]", holder);
+  if (time) time.textContent = `Время: ${elapsed.toFixed(1)} с`;
+  if (actions) actions.textContent = `Действий: ${metrics.actions}`;
+  if (models) models.textContent = `Фиттс: ${metrics.fittsSeconds.toFixed(2)} с · Хик-Хайман: ${metrics.hickSeconds.toFixed(2)} с`;
 }
 
 function openDialog(selector) {
@@ -364,6 +439,11 @@ function setAuthMode(mode) {
   $$("[data-auth-mode]").forEach((button) => {
     button.classList.toggle("active", button.dataset.authMode === mode);
   });
+  if (mode === "register") {
+    startRegistrationMetrics(true);
+  } else {
+    stopRegistrationMetrics();
+  }
 }
 
 function openProfile() {
@@ -419,8 +499,15 @@ function attachEvents() {
   $$("[data-open-cart]").forEach((button) => button.addEventListener("click", openCart));
 
   $$("dialog").forEach((dialog) => {
-    dialog.addEventListener("close", () => document.body.classList.remove("modal-open"));
+    dialog.addEventListener("close", () => {
+      document.body.classList.remove("modal-open");
+      if (dialog.matches("[data-auth-dialog]")) stopRegistrationMetrics();
+    });
   });
+
+  const registerForm = $("[data-register-form]");
+  registerForm.addEventListener("pointerdown", trackRegistrationAction);
+  registerForm.addEventListener("focusin", trackRegistrationAction);
 
   $$("[data-auth-mode]").forEach((button) => {
     button.addEventListener("click", () => setAuthMode(button.dataset.authMode));
@@ -436,6 +523,7 @@ function attachEvents() {
 
     const generate = event.target.closest("[data-generate-password]");
     if (generate) {
+      trackRegistrationAction(event);
       const form = generate.closest("form");
       const input = $("input[name='password']", form);
       input.value = generatePassword();
@@ -478,6 +566,7 @@ function attachEvents() {
       return;
     }
     try {
+      stopRegistrationMetrics();
       const data = await api("/api/register", { method: "POST", body: JSON.stringify(formData(form)) });
       state.user = data.user;
       closeDialog("[data-auth-dialog]");
@@ -606,6 +695,62 @@ function attachEvents() {
   attachChatEvents();
 }
 
+function localChatAnswer(message) {
+  const text = message.toLowerCase();
+  const hasAny = (...words) => words.some((word) => text.includes(word));
+  const categories = {
+    sets: "сеты",
+    sushi: "суши",
+    rolls: "роллы",
+    drinks: "саке",
+    sides: "гарниры",
+    sauces: "соусы"
+  };
+
+  if (hasAny("адрес", "где", "находит", "карта", "локац")) {
+    return "Мы находимся по адресу: Алматы, Абая 150. Карта и контакты есть на странице «О нас».";
+  }
+  if (hasAny("время", "работ", "открыт", "закрыт", "график")) {
+    return "Sakura Table работает каждый день с 11:00 до 23:00.";
+  }
+  if (hasAny("достав", "курьер", "привез")) {
+    return "Доставку можно оформить через каталог и корзину. Добавьте блюда, откройте корзину, укажите адрес, время и способ оплаты.";
+  }
+  if (hasAny("брон", "стол", "заброни")) {
+    return "Столик можно забронировать на странице «Бронь». Для отправки заявки нужно войти или создать аккаунт.";
+  }
+  if (hasAny("оплат", "карта", "налич", "онлайн", "kaspi", "каспи")) {
+    return "Доступны оплата картой курьеру, наличными и онлайн. Для онлайн-оплаты сайт сохраняет только безопасные данные сверки: способ, имя плательщика, телефон перевода или последние 4 цифры карты.";
+  }
+  if (hasAny("меню", "каталог", "блюд", "цена", "pdf")) {
+    return "Каталог доступен на странице «Каталог». Там можно отфильтровать сеты, суши, роллы, саке, гарниры и соусы, а также скачать PDF-меню.";
+  }
+  if (hasAny("саке", "напит")) {
+    return "В меню есть саке, которое можно подать охлажденным или теплым. Если хотите подобрать пару к роллам, напишите, какие блюда выбираете.";
+  }
+  if (hasAny("васаби", "соус", "соусы", "гари", "имбир")) {
+    return "К суши и роллам доступны васаби, гари, понзу, спайси-майо, никири-соя и кунжутные соусы. Их можно добавить как отдельные позиции в каталоге.";
+  }
+  if (hasAny("регистра", "аккаунт", "профиль", "пароль")) {
+    return "Аккаунт нужен для брони, доставки и личного кабинета. Пароль должен быть от 8 символов и содержать хотя бы один спецсимвол.";
+  }
+  if (hasAny("оператор", "человек", "админ", "помощ")) {
+    return "Если нужен живой ответ, нажмите кнопку «Оператор» в чате. После этого администратор сможет ответить в этом же диалоге.";
+  }
+  if (hasAny("ролл", "роллы", "суши", "сет", "гарнир")) {
+    const matchedCategory = Object.entries(categories).find(([, label]) => text.includes(label) || text.includes(label.slice(0, -1)));
+    const items = state.menu
+      .filter((item) => item.available && (!matchedCategory || item.category === matchedCategory[0]))
+      .slice(0, 4)
+      .map((item) => `${item.name} - ${money(item.price)}`);
+    if (items.length) return `Из актуального меню могу предложить: ${items.join(", ")}. Полный список есть в каталоге.`;
+  }
+  if (hasAny("привет", "здравств", "добрый", "салам")) {
+    return "Здравствуйте. Могу подсказать по меню, доставке, брони, оплате, адресу и времени работы.";
+  }
+  return "";
+}
+
 function attachChatEvents() {
   const panel = $("[data-chat-panel]");
   const toggle = $("[data-chat-toggle]");
@@ -643,6 +788,12 @@ function attachChatEvents() {
       }
       return;
     }
+    const localAnswer = localChatAnswer(message);
+    if (localAnswer) {
+      pushChat("assistant", localAnswer);
+      state.chatHistory.push({ role: "user", content: message }, { role: "assistant", content: localAnswer });
+      return;
+    }
     const pending = pushChat("assistant", "Думаю...");
     try {
       const data = await api("/api/chat", {
@@ -652,7 +803,7 @@ function attachChatEvents() {
       pending.textContent = data.answer;
       state.chatHistory.push({ role: "user", content: message }, { role: "assistant", content: data.answer });
     } catch (error) {
-      pending.textContent = error.message || "AI-чат пока недоступен. Проверьте GROQ_API_KEY на сервере.";
+      pending.textContent = localChatAnswer(message) || error.message || "Сейчас могу ответить на базовые вопросы: адрес, время работы, доставка, бронь, оплата, меню и оператор.";
     }
   });
 }

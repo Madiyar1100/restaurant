@@ -662,6 +662,27 @@ textarea {
   margin: 0;
 }
 
+.registration-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  padding: 12px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.registration-metrics strong {
+  grid-column: 1 / -1;
+  color: var(--text);
+}
+
+.registration-metrics span {
+  min-width: 0;
+}
+
 .form-message {
   min-height: 24px;
   margin: 0;
@@ -1241,7 +1262,8 @@ dialog::backdrop {
   }
 
   .form-grid,
-  .chat-form {
+  .chat-form,
+  .registration-metrics {
     grid-template-columns: 1fr;
   }
 

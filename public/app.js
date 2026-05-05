@@ -44,10 +44,14 @@ const dishImages = {
   "Salmon Yuzu Roll": "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=900&q=80",
   "Unagi Dragon Roll": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
   "Sake Junmai": "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80",
-  "Edamame Shio": "https://plus.unsplash.com/premium_photo-1666318300348-a4d0226d81ad?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "Sauce Flight": "https://images.unsplash.com/photo-1599253334613-90aaa517759c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "Edamame Shio": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Bowl_of_Edamame.jpg/960px-Bowl_of_Edamame.jpg",
+  "Sauce Flight": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Soy_sauce_with_wasabi.jpg/960px-Soy_sauce_with_wasabi.jpg",
   "Wasabi & Gari Set": "https://images.unsplash.com/photo-1592180387432-d735c59eee1a?auto=format&fit=crop&w=900&q=80"
 };
+
+const dishImagesByName = Object.fromEntries(
+  Object.entries(dishImages).map(([name, url]) => [name.trim().toLowerCase(), url])
+);
 
 const TEXT = {
   ru: {
@@ -540,7 +544,19 @@ function applyTranslations() {
 }
 
 function imageFor(item) {
-  return item.imageUrl || dishImages[item.name] || menuImages[item.category] || menuImages.rolls;
+  const customImage = String(item.imageUrl || "").trim();
+  return customImage || fallbackImageFor(item);
+}
+
+function fallbackImageFor(item) {
+  return dishImagesByName[String(item.name || "").trim().toLowerCase()] || menuImages[item.category] || menuImages.rolls;
+}
+
+function handleMenuImageError(event) {
+  const img = event.currentTarget;
+  if (img.dataset.fallbackApplied === "1") return;
+  img.dataset.fallbackApplied = "1";
+  img.src = img.dataset.fallback || menuImages.rolls;
 }
 
 async function api(path, options = {}) {
@@ -832,7 +848,7 @@ function renderMenu() {
   const items = state.menu.filter((item) => state.filter === "all" || item.category === state.filter);
   grid.innerHTML = items.map((item) => `
     <article class="menu-card">
-      <img class="menu-art" src="${imageFor(item)}" alt="${escapeHtml(item.name)}" loading="lazy">
+      <img class="menu-art" src="${imageFor(item)}" data-fallback="${fallbackImageFor(item)}" alt="${escapeHtml(item.name)}" loading="lazy">
       <div>
         <p class="eyebrow">${categoryLabel(item.category)}</p>
         <h3>${escapeHtml(item.name)}</h3>
@@ -848,6 +864,9 @@ function renderMenu() {
       </div>
     </article>
   `).join("");
+  $$(".menu-art", grid).forEach((img) => {
+    img.addEventListener("error", handleMenuImageError, { once: true });
+  });
 }
 
 function cartRows() {

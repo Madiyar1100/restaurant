@@ -18,6 +18,8 @@ from .models import ChatMessage, ChatThread, CustomerProfile, DeliveryItem, Deli
 
 
 SPECIAL_RE = re.compile(r"[^A-Za-z0-9]")
+PROMO_CODE = "SAKURA5"
+PROMO_DISCOUNT_PERCENT = 5
 
 
 def index(request):
@@ -118,6 +120,14 @@ def payment_details_from(data):
     if text(data.get("paymentComment")):
         rows.append(f"Комментарий: {text(data.get('paymentComment'))}")
     return "\n".join(rows)
+
+
+def promo_discount(subtotal, promo_code):
+    code = text(promo_code).upper().replace(" ", "")
+    if code != PROMO_CODE:
+        return "", 0, 0
+    amount = round(subtotal * PROMO_DISCOUNT_PERCENT / 100)
+    return PROMO_CODE, PROMO_DISCOUNT_PERCENT, amount
 
 
 def message_payload(message):
@@ -388,10 +398,25 @@ def deliveries(request):
                 quantity=quantity,
             )
             total += menu_item.price * quantity
-        order.total = total
-        order.save(update_fields=["total"])
+        promo_code, discount_percent, discount_amount = promo_discount(total, data.get("promoCode"))
+        order.promo_code = promo_code
+        order.discount_percent = discount_percent
+        order.discount_amount = discount_amount
+        order.total = max(0, total - discount_amount)
+        order.save(update_fields=["promo_code", "discount_percent", "discount_amount", "total"])
 
-    return JsonResponse({"delivery": {"id": str(order.id), "status": order.status, "total": order.total}}, status=201)
+    return JsonResponse(
+        {
+            "delivery": {
+                "id": str(order.id),
+                "status": order.status,
+                "total": order.total,
+                "promoCode": order.promo_code,
+                "discountAmount": order.discount_amount,
+            }
+        },
+        status=201,
+    )
 
 
 def restaurant_context():

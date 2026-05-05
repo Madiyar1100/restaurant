@@ -79,13 +79,13 @@ class DeliveryItemInline(admin.TabularInline):
 
 @admin.register(DeliveryOrder)
 class DeliveryOrderAdmin(admin.ModelAdmin):
-    list_display = ("name", "phone", "address", "total", "payment", "status", "created_at")
-    list_filter = ("status", "payment", "created_at")
-    search_fields = ("name", "phone", "address", "notes", "payment_details", "user__email")
+    list_display = ("name", "phone", "address", "total", "promo_code", "discount_amount", "payment", "status", "created_at")
+    list_filter = ("status", "payment", "promo_code", "created_at")
+    search_fields = ("name", "phone", "address", "notes", "payment_details", "promo_code", "user__email")
     list_editable = ("status",)
     fieldsets = (
         ("Клиент", {"fields": ("user", "name", "phone", "address")}),
-        ("Оплата и доставка", {"fields": ("time_window", "payment", "payment_details", "total", "status")}),
+        ("Оплата и доставка", {"fields": ("time_window", "payment", "payment_details", "promo_code", "discount_percent", "discount_amount", "total", "status")}),
         ("Комментарий", {"fields": ("notes",)}),
     )
     inlines = [DeliveryItemInline]

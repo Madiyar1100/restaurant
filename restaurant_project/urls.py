@@ -11,6 +11,7 @@ urlpatterns = [
     path("booking/", views.index, name="booking"),
     path("cart/", views.index, name="cart"),
     path("profile/", views.index, name="profile"),
+    path("quiz/", views.index, name="quiz"),
     path("about/", views.index, name="about"),
     path("menu.pdf", views.menu_pdf, name="menu_pdf"),
     path("admin/", admin.site.urls),

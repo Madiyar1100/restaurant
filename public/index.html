@@ -26,10 +26,19 @@
         <a href="/catalog/">Каталог</a>
         <a href="/delivery/">Доставка</a>
         <a href="/booking/">Бронь</a>
+        <a href="/quiz/">Викторина</a>
         <a href="/about/">О нас</a>
       </nav>
 
       <div class="account-actions">
+        <label class="language-switch" aria-label="Выбор языка">
+          <span class="sr-only">Язык</span>
+          <select data-language-switch>
+            <option value="ru">RU</option>
+            <option value="en">EN</option>
+            <option value="kk">KZ</option>
+          </select>
+        </label>
         <button class="icon-btn" type="button" data-theme-toggle aria-label="Переключить тему">
           <span data-theme-icon aria-hidden="true">☾</span>
         </button>
@@ -102,6 +111,11 @@
             <span>04</span>
             <h3>Как нас найти</h3>
             <p>Адрес, часы работы, телефон и карта ресторана в центре Алматы.</p>
+          </a>
+          <a class="hub-card" href="/quiz/">
+            <span>05</span>
+            <h3>Викторина с промокодом</h3>
+            <p>Ответьте на вопросы о суши и получите скидку 5% на доставку.</p>
           </a>
         </div>
       </section>
@@ -183,7 +197,11 @@
           <h2>Проверьте заказ перед доставкой</h2>
           <p>Количество блюд можно менять здесь. Корзина сохраняется в браузере, поэтому позиции не пропадают при переходе между страницами сайта.</p>
           <div data-cart-items class="cart-items"></div>
-          <p class="cart-total">Итого: <strong data-cart-total>0 ₸</strong></p>
+          <div class="cart-summary">
+            <p>Сумма: <strong data-cart-subtotal>0 ₸</strong></p>
+            <p data-cart-discount-row hidden>Скидка: <strong data-cart-discount>0 ₸</strong></p>
+            <p class="cart-total">Итого: <strong data-cart-total>0 ₸</strong></p>
+          </div>
           <a class="secondary-btn" href="/catalog/">Вернуться в каталог</a>
         </div>
         <form class="panel form-grid" data-delivery-form>
@@ -211,6 +229,13 @@
               <option value="online">Онлайн</option>
             </select>
           </label>
+          <label class="wide">Промокод
+            <span class="promo-field">
+              <input name="promoCode" data-promo-input placeholder="SAKURA5">
+              <button class="mini-btn" type="button" data-apply-promo>Применить</button>
+            </span>
+          </label>
+          <p class="form-message wide" data-promo-message role="status"></p>
           <div class="payment-details wide" data-payment-details hidden>
             <p>Для безопасности сайт не хранит полный номер карты и CVV. Для онлайн-оплаты укажите данные перевода, чтобы администратор сверил платеж.</p>
             <label>Способ онлайн-оплаты
@@ -277,6 +302,19 @@
           <button class="primary-btn wide" type="submit">Сохранить профиль</button>
           <p class="form-message wide" data-profile-message role="status"></p>
         </form>
+      </section>
+
+      <section id="quiz-page" class="section split-section route-section">
+        <div class="section-heading">
+          <p class="eyebrow">Викторина</p>
+          <h2>Проверьте знание суши и получите промокод</h2>
+          <p>В викторине 10 вопросов. Если ответить правильно минимум на 7, появится промокод на скидку 5% для доставки.</p>
+          <div class="quiz-reward" data-quiz-reward hidden>
+            <strong>Ваш промокод: <span data-promo-code>SAKURA5</span></strong>
+            <p>Введите его в корзине при оформлении доставки.</p>
+          </div>
+        </div>
+        <form class="panel quiz-panel" data-quiz-form></form>
       </section>
 
       <section id="chat" class="section chat-section home-only">
@@ -348,6 +386,7 @@
             <a href="/catalog/">Каталог</a>
             <a href="/booking/">Бронь</a>
             <a href="/delivery/">Доставка</a>
+            <a href="/quiz/">Викторина</a>
             <a href="/about/">О нас</a>
           </nav>
         </div>
